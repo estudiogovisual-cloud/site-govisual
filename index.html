@@ -135,6 +135,9 @@
         .order-status.cancelado{background:#F8D7DA;color:#721C24}
         .order-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
         .order-meta{font-size:.75rem;color:var(--text-soft);margin-top:6px}
+        .fixed-option-item{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+        .fixed-option-item input{flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:.85rem}
+        .fixed-option-item .remove-btn{background:none;border:none;color:var(--danger);cursor:pointer;font-size:1.2rem;line-height:1;padding:4px}
         @media(max-width:968px){.hero-grid,.contact-grid{grid-template-columns:1fr}.services-grid{grid-template-columns:repeat(2,1fr)}.diff-grid{grid-template-columns:repeat(2,1fr)}}
         @media(max-width:600px){.nav{display:none}.services-grid,.diff-grid,.two-cols{grid-template-columns:1fr}}
     </style>
@@ -346,14 +349,24 @@
                 <div class="form-group"><label>Parágrafo 2</label><textarea id="aboutP2"></textarea></div>
             </div>
 
+            <!-- PRODUTOS -->
             <div class="admin-card">
-                <h2>Produtos / Serviços (precificados)</h2>
+                <h2>Produtos / Serviços (dinâmicos)</h2>
                 <div class="form-group"><label>Título da seção</label><input type="text" id="servicesTitle"></div>
                 <div class="form-group"><label>Subtítulo</label><textarea id="servicesSub"></textarea></div>
                 <div id="productsList"></div>
                 <button type="button" class="btn btn-outline" onclick="addItem('products')">Adicionar produto</button>
             </div>
 
+            <!-- OPÇÕES FIXAS -->
+            <div class="admin-card">
+                <h2>Opções fixas do formulário</h2>
+                <p style="font-size:.8rem;color:var(--text-soft);margin-bottom:12px">Essas opções aparecem abaixo dos produtos no campo "Escolher serviço", separadas por uma barra.</p>
+                <div id="fixedOptionsList"></div>
+                <button type="button" class="btn btn-outline" onclick="addItem('fixedOptions')">Adicionar opção fixa</button>
+            </div>
+
+            <!-- PIX -->
             <div class="admin-card">
                 <h2>Configuração do PIX</h2>
                 <div class="form-group"><label>Chave PIX (CPF, CNPJ, e-mail ou telefone)</label><input type="text" id="pixKey" placeholder="seuemail@gmail.com"></div>
@@ -501,6 +514,14 @@ var defaultConfig = {
         {title:'Cards Digitais',description:'Mini cards e artes exclusivas para comunicação rápida nas redes.',stars:4,price:29.90},
         {title:'Projeto Personalizado',description:'Soluções sob medida — de identidades visuais a demandas exclusivas.',stars:5,price:149.90}
     ],
+    fixedOptions:[
+        'Ainda não sei / Preciso de orientação',
+        'Pacote completo',
+        'Tenho um orçamento definido',
+        'Reformulação de identidade visual',
+        'Material para evento específico',
+        'Outro'
+    ],
     pix:{key:'',name:'',city:'',instructions:'Após o pagamento, envie o comprovante no WhatsApp.'},
     diffTitle:'Por que escolher nosso trabalho?', diffSub:'Qualidade, propósito e compromisso.',
     diffs:[
@@ -549,16 +570,6 @@ function renderStars(n){
     for(var i=1;i<=5;i++) s += i<=n ? '★' : '☆';
     return '<span class="stars">'+s+'</span>';
 }
-
-/* ===== OPÇÕES EXTRAS PARA O SELECT ===== */
-var extraServiceOptions = [
-    'Ainda não sei / Preciso de orientação',
-    'Pacote completo',
-    'Tenho um orçamento definido',
-    'Reformulação de identidade visual',
-    'Material para evento específico',
-    'Outro'
-];
 
 /* ===== APLICAR CONFIG ===== */
 function applyConfig(){
@@ -647,23 +658,32 @@ function setText(id,v){ var el=$(id); if(el) el.innerHTML=v }
 function updateTipoSelect(){
     var select = $('tipo'); if(!select) return;
     select.innerHTML = '<option value="" disabled selected>Selecione uma opção</option>';
-    
-    var combined = [];
-    // Produtos do painel
+
+    // Grupo de produtos dinâmicos
+    var optgroup1 = document.createElement('optgroup');
+    optgroup1.label = 'Serviços';
     (config.products || []).forEach(function(p){
-        if(p && p.title) combined.push(p.title);
+        if(p && p.title){
+            var opt = document.createElement('option');
+            opt.value = p.title;
+            opt.textContent = p.title;
+            optgroup1.appendChild(opt);
+        }
     });
-    // Opções extras (sem duplicar)
-    extraServiceOptions.forEach(function(o){
-        if(combined.indexOf(o) === -1) combined.push(o);
+    if(optgroup1.children.length) select.appendChild(optgroup1);
+
+    // Grupo de opções fixas (separado por barra)
+    var optgroup2 = document.createElement('optgroup');
+    optgroup2.label = 'Outras opções';
+    (config.fixedOptions || []).forEach(function(o){
+        if(o){
+            var opt = document.createElement('option');
+            opt.value = o;
+            opt.textContent = o;
+            optgroup2.appendChild(opt);
+        }
     });
-    
-    combined.forEach(function(title){
-        var opt = document.createElement('option');
-        opt.value = title;
-        opt.textContent = title;
-        select.appendChild(opt);
-    });
+    if(optgroup2.children.length) select.appendChild(optgroup2);
 }
 
 /* ===== CARRINHO ===== */
@@ -967,6 +987,10 @@ function fillAdmin(){
 function renderItems(){
     var pl = $('productsList'); pl.innerHTML = '';
     (config.products || []).forEach(function(item,i){ pl.appendChild(productCard(i, item)); });
+
+    var fo = $('fixedOptionsList'); fo.innerHTML = '';
+    (config.fixedOptions || []).forEach(function(opt,i){ fo.appendChild(fixedOptionRow(i, opt)); });
+
     var dl = $('diffsList'); dl.innerHTML = '';
     (config.diffs || []).forEach(function(item,i){ dl.appendChild(itemCard('diff',i,item.title,item.description)); });
     var fl = $('faqList'); fl.innerHTML = '';
@@ -983,6 +1007,18 @@ function productCard(i, p){
         + '<div class="form-group"><label>Estrelas (1-5)</label><input type="number" step="1" min="0" max="5" class="p-stars" value="'+(p.stars||0)+'"></div>'
         + '</div>';
     div.querySelector('.remove-item').onclick = function(){ removeProduct(i); };
+    return div;
+}
+
+function fixedOptionRow(i, value){
+    var div = document.createElement('div');
+    div.className = 'fixed-option-item';
+    div.innerHTML = '<input type="text" class="fo-input" value="'+esc(value||'')+'" placeholder="Digite a opção fixa">'
+        + '<button type="button" class="remove-btn" title="Remover">&times;</button>';
+    div.querySelector('.remove-btn').onclick = function(){
+        config.fixedOptions.splice(i,1);
+        renderItems();
+    };
     return div;
 }
 
@@ -1012,6 +1048,7 @@ function itemCard(type,i,t1,t2){
 
 function addItem(type){
     if(type === 'products') config.products.push({title:'',description:'',price:0,stars:5});
+    if(type === 'fixedOptions') config.fixedOptions.push('');
     if(type === 'diffs') config.diffs.push({title:'',description:''});
     if(type === 'faqs') config.faqs.push({question:'',answer:''});
     renderItems();
@@ -1068,6 +1105,13 @@ function collectForm(){
             stars: parseInt(el.querySelector('.p-stars').value) || 0
         });
     });
+
+    config.fixedOptions = [];
+    document.querySelectorAll('#fixedOptionsList .fo-input').forEach(function(input){
+        var val = input.value.trim();
+        if(val) config.fixedOptions.push(val);
+    });
+
     config.diffs = [];
     document.querySelectorAll('#diffsList .item').forEach(function(el){
         config.diffs.push({ title: el.querySelector('.field-title').value.trim(), description: el.querySelector('.field-desc').value.trim() });
