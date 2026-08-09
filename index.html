@@ -17,24 +17,16 @@
         .btn-primary{background:var(--primary);color:#fff}
         .btn-outline{background:transparent;color:var(--primary);border:1px solid var(--primary)}
         .btn-danger{background:transparent;color:var(--danger);border:1px solid var(--danger)}
-        
-        /* Abas (admin only) */
         .tabs{position:fixed;top:0;left:0;right:0;z-index:200;background:var(--primary-dark);display:none;align-items:center;padding:6px 12px;gap:8px}
         body.admin-mode .tabs{display:flex}
         body.admin-mode{padding-top:52px}
         body:not(.admin-mode) .header{top:0}
         .tabs button{background:transparent;border:none;color:rgba(255,255,255,.7);font-family:'Poppins',sans-serif;font-weight:600;padding:8px 16px;border-radius:6px;cursor:pointer;font-size:.85rem}
         .tabs button.active{background:var(--secondary);color:var(--primary-dark)}
-        .tab-status{display:flex;align-items:center;gap:8px;margin-left:auto;color:var(--secondary);font-size:.72rem;font-weight:600;text-transform:uppercase}
-        .tab-status .dot{width:8px;height:8px;border-radius:50%;background:var(--secondary);flex-shrink:0}
-        .tab-status .dot.red{background:var(--danger)}
-        .tab-status .dot.green{background:#4CAF50}
-
+        .tab-status{margin-left:auto;color:var(--secondary);font-size:.72rem;font-weight:600;text-transform:uppercase}
         .screen{display:none;min-height:100vh;background:var(--bg);padding:20px}
         .screen.active{display:block}
         #screen-site.active{background:#fff;padding:0;min-height:auto}
-
-        /* Site */
         .header{position:sticky;top:52px;z-index:50;background:rgba(255,255,255,.95);border-bottom:1px solid #eee}
         .header .container{display:flex;align-items:center;justify-content:space-between;height:60px}
         .logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:1.2rem;color:var(--primary)}
@@ -73,13 +65,11 @@
         .btn-light{background:#fff;color:var(--primary)}
         .contact{background:var(--bg)}
         .contact-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:40px}
-        .contact-info p{color:var(--text-soft);margin-bottom:16px}
         .contact-form{background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px;box-shadow:0 4px 12px rgba(0,0,0,.04)}
         .form-group{margin-bottom:14px}
         .form-group label{display:block;font-size:.8rem;font-weight:600;color:var(--primary);margin-bottom:4px}
         .form-group input,.form-group select,.form-group textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-family:inherit;font-size:.9rem}
         .form-group textarea{min-height:70px;resize:vertical}
-        .contact-form .btn{width:100%}
         .faq-list{max-width:700px;margin:0 auto}
         .faq-item{border:1px solid var(--border);border-radius:10px;margin-bottom:10px;background:#fff;overflow:hidden}
         .faq-item button{width:100%;background:none;border:none;padding:16px 20px;font-family:'Poppins',sans-serif;font-weight:600;color:var(--primary);text-align:left;cursor:pointer;font-size:.9rem;display:flex;justify-content:space-between}
@@ -92,8 +82,6 @@
         .verse-footer{color:var(--secondary);font-style:italic}
         .whatsapp-float{position:fixed;bottom:20px;right:20px;width:52px;height:52px;background:var(--primary);border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:0 4px 12px rgba(0,0,0,.2);z-index:100}
         .whatsapp-float svg{width:26px;height:26px;fill:currentColor}
-
-        /* Login / Admin */
         .auth-container{max-width:360px;margin:60px auto;background:#fff;border:1px solid var(--border);border-radius:14px;padding:28px;box-shadow:0 4px 16px rgba(0,0,0,.06)}
         .auth-container h1{font-size:1.2rem;text-align:center;margin-bottom:8px}
         .auth-container .sub{font-size:.84rem;color:var(--text-soft);text-align:center;margin-bottom:20px}
@@ -110,8 +98,6 @@
         .item{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;margin-bottom:10px;position:relative}
         .item .remove-item{position:absolute;top:6px;right:6px;padding:4px 10px;font-size:.7rem}
         .two-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-        .logo-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-        .logo-preview{width:48px;height:48px;border-radius:8px;border:2px solid var(--border);display:none;object-fit:cover}
         .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary-dark);color:#fff;padding:10px 20px;border-radius:8px;font-size:.85rem;z-index:300;opacity:0;pointer-events:none;transition:opacity .3s}
         .toast.show{opacity:1}
         @media(max-width:968px){.hero-grid,.contact-grid{grid-template-columns:1fr}.services-grid{grid-template-columns:repeat(2,1fr)}.diff-grid{grid-template-columns:repeat(2,1fr)}}
@@ -120,14 +106,12 @@
 </head>
 <body>
 
-<!-- Barra de abas (só admin vê) -->
 <div class="tabs">
     <button class="active" id="tab-site" onclick="showScreen('site')">Site</button>
     <button id="tab-admin" onclick="showScreen('admin')">Painel</button>
-    <span class="tab-status"><span class="dot green" id="connection-dot"></span><span id="tab-status">Conectado</span></span>
+    <span class="tab-status" id="tab-status">Conectado</span>
 </div>
 
-<!-- SITE -->
 <div id="screen-site" class="screen active">
     <header class="header">
         <div class="container">
@@ -208,7 +192,7 @@
                     <a href="#" id="facebook-link" style="display:none;background:var(--secondary-soft);color:var(--primary);padding:8px 14px;border-radius:8px;font-size:.8rem;font-weight:600">Facebook</a>
                 </div>
             </div>
-            <form id="form-orcamento" class="contact-form">
+            <form id="form-orcamento" class="contact-form" style="background:#fff;border:1px solid var(--border);border-radius:12px;padding:24px">
                 <div class="form-group"><label>Nome</label><input type="text" id="nome" placeholder="Seu nome" required></div>
                 <div class="form-group"><label>E-mail</label><input type="email" id="email" placeholder="voce@email.com"></div>
                 <div class="form-group">
@@ -219,7 +203,7 @@
                     </select>
                 </div>
                 <div class="form-group"><label>Conte sobre o projeto</label><textarea id="descricao" required></textarea></div>
-                <button type="submit" class="btn btn-primary">Enviar pelo WhatsApp</button>
+                <button type="submit" class="btn btn-primary" style="width:100%">Enviar pelo WhatsApp</button>
             </form>
         </div>
     </section>
@@ -247,11 +231,10 @@
     </a>
 </div>
 
-<!-- LOGIN (Firebase Auth) -->
 <div id="screen-auth" class="screen">
     <div class="auth-container">
         <h1>Acesso restrito</h1>
-        <p class="sub">Painel administrativo — autenticação Firebase</p>
+        <p class="sub">Painel administrativo</p>
         <form id="auth-form">
             <div class="form-group">
                 <label>E-mail</label>
@@ -267,20 +250,15 @@
     </div>
 </div>
 
-<!-- PAINEL -->
 <div id="screen-admin" class="screen">
     <div class="admin-container">
         <div class="admin-header">
             <h1>Painel de Personalização</h1>
-            <p>Logado: <span id="user-email"></span> — as alterações são transmitidas em tempo real.</p>
-        </div>
-        <div class="admin-alert">
-            ⚡ <strong>Autenticado com Firebase Auth.</strong> O Firestore agora exige login para escrever. Sair do painel: <a href="#" onclick="logout()" style="color:var(--primary);font-weight:600">clique aqui</a>.
+            <p>Logado: <span id="user-email"></span> — alterações em tempo real.</p>
         </div>
         <div id="message"></div>
 
         <form id="adminForm">
-            <!-- Identidade -->
             <div class="admin-card">
                 <h2>Identidade</h2>
                 <div class="form-group"><label>Nome da marca</label><input type="text" id="brandName"></div>
@@ -289,7 +267,6 @@
                 <div class="form-group"><label>Facebook</label><input type="text" id="facebookUrl"></div>
             </div>
 
-            <!-- Hero -->
             <div class="admin-card">
                 <h2>Seção Principal</h2>
                 <div class="form-group"><label>Selo</label><input type="text" id="heroBadge"></div>
@@ -302,14 +279,12 @@
                 </div>
             </div>
 
-            <!-- Versículo -->
             <div class="admin-card">
                 <h2>Versículo</h2>
                 <div class="form-group"><label>Texto</label><textarea id="verseText"></textarea></div>
                 <div class="form-group"><label>Referência</label><input type="text" id="verseRef"></div>
             </div>
 
-            <!-- Sobre -->
             <div class="admin-card">
                 <h2>Sobre</h2>
                 <div class="form-group"><label>Título</label><input type="text" id="aboutTitle"></div>
@@ -317,7 +292,6 @@
                 <div class="form-group"><label>Parágrafo 2</label><textarea id="aboutP2"></textarea></div>
             </div>
 
-            <!-- Serviços -->
             <div class="admin-card">
                 <h2>Serviços</h2>
                 <div class="form-group"><label>Título da seção</label><input type="text" id="servicesTitle"></div>
@@ -326,7 +300,6 @@
                 <button type="button" class="btn btn-outline" onclick="addItem('services')">Adicionar serviço</button>
             </div>
 
-            <!-- Diferenciais -->
             <div class="admin-card">
                 <h2>Diferenciais</h2>
                 <div class="form-group"><label>Título</label><input type="text" id="diffTitle"></div>
@@ -335,7 +308,6 @@
                 <button type="button" class="btn btn-outline" onclick="addItem('diffs')">Adicionar diferencial</button>
             </div>
 
-            <!-- Oferta -->
             <div class="admin-card">
                 <h2>Oferta</h2>
                 <div class="form-group"><label>Selo</label><input type="text" id="offerTag"></div>
@@ -345,13 +317,11 @@
                 <div class="form-group"><label>Botão</label><input type="text" id="offerCta"></div>
             </div>
 
-            <!-- Contato -->
             <div class="admin-card">
                 <h2>Contato</h2>
                 <div class="form-group"><label>Texto</label><textarea id="contactText"></textarea></div>
             </div>
 
-            <!-- FAQ -->
             <div class="admin-card">
                 <h2>FAQ</h2>
                 <div class="form-group"><label>Título</label><input type="text" id="faqTitle"></div>
@@ -359,14 +329,12 @@
                 <button type="button" class="btn btn-outline" onclick="addItem('faqs')">Adicionar pergunta</button>
             </div>
 
-            <!-- Rodapé -->
             <div class="admin-card">
                 <h2>Rodapé</h2>
                 <div class="form-group"><label>Direitos</label><input type="text" id="footerRights"></div>
                 <div class="form-group"><label>Versículo</label><textarea id="footerVerse"></textarea></div>
             </div>
 
-            <!-- Cores -->
             <div class="admin-card">
                 <h2>Cores</h2>
                 <div class="two-cols">
@@ -377,28 +345,16 @@
                 </div>
             </div>
 
-            <!-- Status Firebase -->
-            <div class="admin-card">
-                <h2>Status da conexão</h2>
-                <p id="fb-status" style="font-size:.82rem;color:var(--text-soft)">Verificando...</p>
-            </div>
-
-            <!-- Ações -->
             <div class="admin-actions">
                 <button type="submit" class="btn btn-primary">Salvar Alterações</button>
                 <button type="button" class="btn btn-outline" onclick="showScreen('site')">Ver Site</button>
-                <button type="button" class="btn btn-danger" onclick="resetConfig()">Restaurar Padrão</button>
-                <button type="button" class="btn btn-danger" onclick="logout()">Sair do Painel</button>
+                <button type="button" class="btn btn-danger" onclick="logout()">Sair</button>
             </div>
         </form>
     </div>
 </div>
 
-<!-- Toast -->
-<div class="toast" id="toast"></div>
-
 <script>
-/* ===== FIREBASE CONFIG ===== */
 var firebaseConfig = {
     apiKey: "AIzaSyAb3a9gOI3aEpjpyX2jIyCA4rb3YxbJ4KA",
     authDomain: "landing-page-design-effe0.firebaseapp.com",
@@ -408,63 +364,57 @@ var firebaseConfig = {
     appId: "1:464018189510:web:1d0f3e1b481200c543bbc7"
 };
 
-var db = null;
-var auth = null;
+var db = null, auth = null;
 try {
     firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
     auth = firebase.auth();
-    console.log('Firebase + Auth inicializados!');
-} catch (e) {
-    console.error('Erro Firebase:', e);
-}
+} catch (e) { console.error(e); }
 
-/* ===== CONFIGURAÇÕES PADRÃO ===== */
 var defaultConfig = {
-    brandName: 'Sua Marca', whatsappNumber: '', instagramUrl: '', facebookUrl: '',
-    heroBadge: 'Atendemos igrejas, empresas e empreendedores',
-    heroTitle: 'Design gráfico com <span>propósito</span> e excelência',
-    heroSubtitle: 'Materiais visuais para igrejas, ministérios, empresas e empreendedores.',
-    heroChips: ['Instagram', 'Folhetos', 'Cartazes', 'Cards', 'Slides'],
-    ctaPrimary: 'Quero meu orçamento', ctaSecondary: 'Ver serviços',
-    verseText: 'Tudo o que fizerem, façam de todo o coração, como para o Senhor, e não para os homens.',
-    verseRef: 'Colossenses 3:23',
-    aboutTitle: 'Cada projeto é feito com cuidado, criatividade e fidelidade à Palavra',
-    aboutP1: 'Acreditamos que a comunicação visual também é uma forma de servir.',
-    aboutP2: 'Atendemos igrejas, ministérios, empresas e empreendedores.',
-    servicesTitle: 'Soluções completas para sua comunicação',
-    servicesSub: 'Trabalhamos com materiais digitais e impressos.',
-    services: [
+    brandName:'Sua Marca', whatsappNumber:'', instagramUrl:'', facebookUrl:'',
+    heroBadge:'Atendemos igrejas, empresas e empreendedores',
+    heroTitle:'Design gráfico com <span>propósito</span> e excelência',
+    heroSubtitle:'Materiais visuais para igrejas, ministérios, empresas e empreendedores.',
+    heroChips:['Instagram','Folhetos','Cartazes','Cards','Slides'],
+    ctaPrimary:'Quero meu orçamento', ctaSecondary:'Ver serviços',
+    verseText:'Tudo o que fizerem, façam de todo o coração, como para o Senhor, e não para os homens.',
+    verseRef:'Colossenses 3:23',
+    aboutTitle:'Cada projeto é feito com cuidado, criatividade e fidelidade à Palavra',
+    aboutP1:'Acreditamos que a comunicação visual também é uma forma de servir.',
+    aboutP2:'Atendemos igrejas, ministérios, empresas e empreendedores.',
+    servicesTitle:'Soluções completas para sua comunicação',
+    servicesSub:'Trabalhamos com materiais digitais e impressos.',
+    services:[
         {title:'Posts para Instagram',description:'Artes atrativas para suas redes sociais.'},
-        {title:'Folhetos',description:'Materiais impressos para eventos e campanhas.'},
-        {title:'Cartazes',description:'Peças de grande impacto para comunicação.'},
-        {title:'Cards digitais',description:'Cards para WhatsApp e e-mail marketing.'},
+        {title:'Folhetos',description:'Materiais impressos para eventos.'},
+        {title:'Cartazes',description:'Peças de grande impacto.'},
+        {title:'Cards digitais',description:'Cards para WhatsApp e e-mail.'},
         {title:'Slides',description:'Apresentações limpas e modernas.'},
-        {title:'Projeto personalizado',description:'Projetos sob medida para sua necessidade.'}
+        {title:'Projeto personalizado',description:'Sob medida para sua necessidade.'}
     ],
-    diffTitle: 'Por que escolher nosso trabalho?',
-    diffSub: 'Qualidade, propósito e compromisso.',
-    diffs: [
+    diffTitle:'Por que escolher nosso trabalho?', diffSub:'Qualidade, propósito e compromisso.',
+    diffs:[
         {title:'Identidade cristã',description:'Design que respeita a Palavra.'},
         {title:'Atendimento personalizado',description:'Cada projeto é único.'},
         {title:'Qualidade profissional',description:'Material pronto para uso.'},
-        {title:'Comunicação clara',description:'Mensagem certa ao público certo.'}
+        {title:'Comunicação clara',description:'Mensagem ao público certo.'}
     ],
-    offerTag: 'Oferta por tempo limitado',
-    offerTitle: 'Aproveite de {destaque} no primeiro projeto',
-    offerHighlight: '15% a 25% OFF',
-    offerDesc: 'Solicite um orçamento e garanta seu desconto especial.',
-    offerCta: 'Solicitar orçamento com desconto',
-    contactText: 'Preencha o formulário e a mensagem abrirá no seu WhatsApp.',
-    faqTitle: 'Perguntas frequentes',
-    faqs: [
-        {question:'Quanto custa um projeto?',answer:'O valor varia conforme o tipo e a complexidade.'},
-        {question:'Qual o prazo de entrega?',answer:'Entre 3 e 7 dias úteis.'},
-        {question:'Atendem igrejas e empresas?',answer:'Atendemos todos os públicos.'}
+    offerTag:'Oferta por tempo limitado',
+    offerTitle:'Aproveite de {destaque} no primeiro projeto',
+    offerHighlight:'15% a 25% OFF',
+    offerDesc:'Solicite um orçamento e garanta seu desconto especial.',
+    offerCta:'Solicitar orçamento com desconto',
+    contactText:'Preencha o formulário e a mensagem abrirá no seu WhatsApp.',
+    faqTitle:'Perguntas frequentes',
+    faqs:[
+        {question:'Quanto custa um projeto?',answer:'Depende do tipo e complexidade.'},
+        {question:'Qual o prazo?',answer:'Entre 3 e 7 dias úteis.'},
+        {question:'Atende igrejas e empresas?',answer:'Atendemos todos os públicos.'}
     ],
-    footerRights: '© 2026 Sua Marca. Todos os direitos reservados.',
-    footerVerse: '"Tudo o que fizerem, façam de todo o coração, como para o Senhor." — Colossenses 3:23',
-    primaryColor: '#4A5A2A', primaryDark: '#3A4820', secondaryColor: '#A3C585', bgColor: '#F7F5EF'
+    footerRights:'© 2026 Sua Marca. Todos os direitos reservados.',
+    footerVerse:'"Tudo o que fizerem, façam de todo o coração, como para o Senhor." — Colossenses 3:23',
+    primaryColor:'#4A5A2A', primaryDark:'#3A4820', secondaryColor:'#A3C585', bgColor:'#F7F5EF'
 };
 
 var config = Object.assign({}, defaultConfig, JSON.parse(localStorage.getItem('lp_config') || '{}'));
@@ -472,27 +422,20 @@ var config = Object.assign({}, defaultConfig, JSON.parse(localStorage.getItem('l
 function $(id){return document.getElementById(id)}
 function esc(s){return String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}
 function msg(text,type){var m=$('message');m.textContent=text;m.className=type;setTimeout(function(){m.style.display='none'},4000)}
-function setStatus(s){$('tab-status').textContent=s}
-function toast(text){var t=$('toast');t.textContent=text;t.classList.add('show');setTimeout(function(){t.classList.remove('show')},2000)}
+function toast(text){var t=document.createElement('div');t.style.cssText='position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--primary-dark);color:#fff;padding:12px 24px;border-radius:8px;z-index:300;font-size:.85rem;transition:opacity .3s';t.textContent=text;document.body.appendChild(t);setTimeout(function(){t.style.opacity='0';setTimeout(function(){t.remove()},300)},2000)}
 
-/* ===== APLICAR CONFIG ===== */
+function setContent(id,v,isHtml){var el=$(id);if(!el)return;if(v){if(isHtml)el.innerHTML=v;else el.textContent=v;el.style.display=''}else{el.style.display='none';el.textContent=''}}
+function setText(id,v){var el=$(id);if(el)el.innerHTML=v}
+
 function applyConfig(){
-    if (config.brandName) {
-        setText('logo', config.logoImage ? '<img src="'+config.logoImage+'" alt="Logo">' : config.brandName);
-        setText('footer-logo', config.logoImage ? '<img src="'+config.logoImage+'" alt="Logo">' : config.brandName);
-    } else {
-        setText('logo', '');
-        setText('footer-logo', '');
-    }
+    if (config.brandName) setText('logo', config.brandName), setText('footer-logo', config.brandName);
     setContent('hero-badge', config.heroBadge);
     setContent('hero-title', config.heroTitle, true);
     setContent('hero-subtitle', config.heroSubtitle);
     setContent('cta-primary', config.ctaPrimary);
     setContent('cta-secondary', config.ctaSecondary);
-    
     var chips=$('hero-chips');
     if(config.heroChips&&config.heroChips.length){chips.innerHTML=config.heroChips.map(function(c){return '<span>'+c+'</span>'}).join('');chips.style.display=''}else{chips.style.display='none'}
-    
     setContent('verse-text', config.verseText);
     setContent('verse-ref', config.verseRef);
     setContent('about-title', config.aboutTitle);
@@ -500,141 +443,97 @@ function applyConfig(){
     setContent('about-p2', config.aboutP2);
     setContent('services-title', config.servicesTitle);
     setContent('services-sub', config.servicesSub);
-    
     var sg=$('services-grid');
     if(config.services&&config.services.length){
-        var servicesHtml = config.services.filter(function(s){return s.title&&s.description}).map(function(s){return '<div class="service-card"><div class="service-icon">✦</div><h3>'+s.title+'</h3><p>'+s.description+'</p></div>'}).join('');
-        sg.innerHTML=servicesHtml;sg.style.display=servicesHtml?'':'none';
-    } else {sg.innerHTML='';sg.style.display='none'}
-    
+        var sh=config.services.filter(function(s){return s.title&&s.description}).map(function(s){return '<div class="service-card"><div class="service-icon">✦</div><h3>'+s.title+'</h3><p>'+s.description+'</p></div>'}).join('');
+        sg.innerHTML=sh;sg.style.display=sh?'':'none';
+    }else{sg.innerHTML='';sg.style.display='none'}
     setContent('diff-title', config.diffTitle);
     setContent('diff-sub', config.diffSub);
     var dg=$('diff-grid');
     if(config.diffs&&config.diffs.length){
-        var diffHtml = config.diffs.filter(function(d){return d.title&&d.description}).map(function(d){return '<div class="diff-item"><div class="service-icon">✓</div><h3>'+d.title+'</h3><p>'+d.description+'</p></div>'}).join('');
-        dg.innerHTML=diffHtml;dg.style.display=diffHtml?'':'none';
-    } else {dg.innerHTML='';dg.style.display='none'}
-    
+        var dh=config.diffs.filter(function(d){return d.title&&d.description}).map(function(d){return '<div class="diff-item"><div class="service-icon">✓</div><h3>'+d.title+'</h3><p>'+d.description+'</p></div>'}).join('');
+        dg.innerHTML=dh;dg.style.display=dh?'':'none';
+    }else{dg.innerHTML='';dg.style.display='none'}
     setContent('offer-tag', config.offerTag);
     var ot=$('offer-title');
-    if(config.offerTitle){ot.innerHTML=config.offerTitle.replace('{destaque}','<span>'+config.offerHighlight+'</span>');ot.style.display=''}else{ot.style.display='none';ot.innerHTML=''}
+    if(config.offerTitle){ot.innerHTML=config.offerTitle.replace('{destaque}','<span>'+config.offerHighlight+'</span>');ot.style.display=''}else{ot.style.display='none'}
     setContent('offer-desc', config.offerDesc);
     setContent('offer-cta', config.offerCta);
     setContent('contact-text', config.contactText);
     setContent('faq-title', config.faqTitle);
-    
     var fl=$('faq-list');
     if(config.faqs&&config.faqs.length){
-        var faqHtml = config.faqs.filter(function(f){return f.question&&f.answer}).map(function(f){return '<div class="faq-item"><button>'+f.question+'</button><div class="faq-answer"><p>'+f.answer+'</p></div></div>'}).join('');
-        fl.innerHTML=faqHtml;fl.style.display=faqHtml?'':'none';
-    } else {fl.innerHTML='';fl.style.display='none'}
-    
+        var fh=config.faqs.filter(function(f){return f.question&&f.answer}).map(function(f){return '<div class="faq-item"><button>'+f.question+'</button><div class="faq-answer"><p>'+f.answer+'</p></div></div>'}).join('');
+        fl.innerHTML=fh;fl.style.display=fh?'':'none';
+    }else{fl.innerHTML='';fl.style.display='none'}
     setContent('footer-rights', config.footerRights);
     setContent('footer-verse', config.footerVerse);
-    
     if(config.primaryColor)document.documentElement.style.setProperty('--primary',config.primaryColor);
     if(config.primaryDark)document.documentElement.style.setProperty('--primary-dark',config.primaryDark);
     if(config.secondaryColor)document.documentElement.style.setProperty('--secondary',config.secondaryColor);
     if(config.bgColor)document.documentElement.style.setProperty('--bg',config.bgColor);
-    
     var wa=config.whatsappNumber||'SEUNUMERO';
     window.__wa=wa;
     var wab='https://wa.me/'+wa+'?text='+encodeURIComponent('Olá! Quero um orçamento.');
     $('whatsapp-btn').href=wab;$('whatsapp-float').href=wab;
-    
     var ig=$('instagram-link'),fb=$('facebook-link');
     if(config.instagramUrl){ig.style.display='inline-flex';ig.href=config.instagramUrl}else{ig.style.display='none'}
     if(config.facebookUrl){fb.style.display='inline-flex';fb.href=config.facebookUrl}else{fb.style.display='none'}
-    
     document.querySelectorAll('.faq-item button').forEach(function(b){b.onclick=function(){this.parentElement.classList.toggle('active')}});
 }
-function setContent(id,v,isHtml){var el=$(id);if(!el)return;if(v){if(isHtml)el.innerHTML=v;else el.textContent=v;el.style.display=''}else{el.style.display='none';el.textContent=''}}
-function setText(id,v){var el=$(id);if(el)el.innerHTML=v}
 
-/* ===== FIREBASE - SALVAR (usando auth) ===== */
 function saveToFirebase(){
     return new Promise(function(resolve){
-        if(!db||!auth){resolve({ok:false,error:'Firebase não inicializado'});return}
-        var user = auth.currentUser;
+        if(!db){resolve({ok:false,error:'Firebase não inicializado'});return}
+        var user = auth && auth.currentUser;
         if(!user){resolve({ok:false,error:'Não autenticado'});return}
-        
-        db.collection('config').doc('site').set(config).then(function(){
-            resolve({ok:true});
-        }).catch(function(err){
-            resolve({ok:false,error:err.message});
-        });
+        db.collection('config').doc('site').set(config).then(function(){resolve({ok:true})}).catch(function(err){resolve({ok:false,error:err.message})});
     });
 }
 
-/* ===== FIREBASE - TEMPO REAL ===== */
 var unsubscribe = null;
 function watchFirebase(){
     if(!db)return;
     unsubscribe = db.collection('config').doc('site').onSnapshot(function(doc){
         if(doc.exists){
-            var remoteConfig = Object.assign({}, defaultConfig, doc.data());
-            var isSaving = sessionStorage.getItem('lp_saving') === '1';
+            var remote = Object.assign({}, defaultConfig, doc.data());
+            var isSaving = sessionStorage.getItem('lp_saving')==='1';
             if(!isSaving){
-                config = remoteConfig;
-                localStorage.setItem('lp_config', JSON.stringify(config));
+                config = remote;
+                localStorage.setItem('lp_config',JSON.stringify(config));
                 applyConfig();
-                if($('screen-admin').classList.contains('active')){
-                    fillAdmin();
-                }
-                toast('Site atualizado com novas alterações!');
+                if($('screen-admin').classList.contains('active')) fillAdmin();
+                toast('Site atualizado em tempo real!');
             }
-            sessionStorage.setItem('lp_saving', '0');
+            sessionStorage.setItem('lp_saving','0');
         }
     }, function(err){
         console.error('Erro onSnapshot:', err);
-        setStatus('Desconectado');
-        var dot=$('connection-dot');
-        dot.classList.add('red');
-        dot.classList.remove('green');
+        $('tab-status').textContent='Desconectado';
     });
 }
 
-/* ===== AUTENTICAÇÃO FIREBASE ===== */
 $('auth-form').addEventListener('submit', function(e){
     e.preventDefault();
-    var email = $('auth-email').value.trim();
-    var senha = $('auth-password').value;
-    
-    if(!auth){showAuthError('Firebase Auth não inicializado.');return}
-    
-    // Mostra "entrando..."
-    var btn = $('auth-form').querySelector('button');
-    btn.textContent = 'Entrando...';
-    btn.disabled = true;
-    
-    auth.signInWithEmailAndPassword(email, senha).then(function(userCredential){
-        // Login ok
-        sessionStorage.setItem('lp_auth', '1');
-        $('user-email').textContent = email;
+    var email=$('auth-email').value.trim();
+    var senha=$('auth-password').value;
+    var btn=e.target.querySelector('button');
+    btn.textContent='Entrando...';btn.disabled=true;
+    auth.signInWithEmailAndPassword(email,senha).then(function(){
+        sessionStorage.setItem('lp_auth','1');
+        $('user-email').textContent=email;
         showScreen('admin');
-        msg('Login realizado com sucesso!','success');
+        msg('Login realizado!','success');
     }).catch(function(err){
-        var mensagem = 'Erro ao entrar.';
-        if(err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential'){
-            mensagem = 'E-mail ou senha incorretos.';
-        } else if(err.code === 'auth/invalid-email'){
-            mensagem = 'E-mail inválido.';
-        } else if(err.code === 'auth/user-disabled'){
-            mensagem = 'Usuário desabilitado.';
-        } else {
-            mensagem = err.message;
-        }
-        showAuthError(mensagem);
-        btn.textContent = 'Entrar no Painel';
-        btn.disabled = false;
+        var msg='Erro ao entrar.';
+        if(err.code==='auth/user-not-found'||err.code==='auth/wrong-password'||err.code==='auth/invalid-credential')msg='E-mail ou senha incorretos.';
+        else if(err.code==='auth/invalid-email')msg='E-mail inválido.';
+        else msg=err.message;
+        var el=$('auth-error');el.textContent=msg;el.style.display='block';
+        btn.textContent='Entrar no Painel';btn.disabled=false;
     });
 });
-
-function showAuthError(text){
-    var el = $('auth-error');
-    el.textContent = text;
-    el.style.display = 'block';
-}
 
 function logout(){
     if(auth){
@@ -647,16 +546,12 @@ function logout(){
     }
 }
 
-/* ===== VERIFICA LOGIN AO ABRIR O PAINEL ===== */
 function showScreen(name){
     ['screen-site','screen-auth','screen-admin'].forEach(function(s){$(s).classList.remove('active')});
     $('tab-site').classList.remove('active');
     $('tab-admin').classList.remove('active');
-    
     if(name==='site'){
-        if(!auth || !auth.currentUser){
-            document.body.classList.remove('admin-mode');
-        }
+        if(!auth || !auth.currentUser) document.body.classList.remove('admin-mode');
         applyConfig();
         $('screen-site').classList.add('active');
         $('tab-site').classList.add('active');
@@ -666,7 +561,7 @@ function showScreen(name){
             document.body.classList.add('admin-mode');
             $('screen-admin').classList.add('active');
             $('tab-admin').classList.add('active');
-            $('user-email').textContent = auth.currentUser.email;
+            $('user-email').textContent=auth.currentUser.email;
             fillAdmin();
         }else{
             document.body.classList.add('admin-mode');
@@ -679,7 +574,6 @@ function showScreen(name){
     }
 }
 
-/* ===== PREENCHER ADMIN ===== */
 function fillAdmin(){
     $('brandName').value=config.brandName||'';
     $('whatsappNumber').value=config.whatsappNumber||'';
@@ -713,33 +607,10 @@ function fillAdmin(){
     $('primaryDark').value=config.primaryDark||'#3A4820';
     $('secondaryColor').value=config.secondaryColor||'#A3C585';
     $('bgColor').value=config.bgColor||'#F7F5EF';
-    
     renderItems();
-    setStatus('Conectado');
-    checkFirebaseStatus();
+    $('tab-status').textContent='Conectado';
 }
 
-function checkFirebaseStatus(){
-    var el=$('fb-status');
-    if(!db){el.textContent='Erro: Firebase não inicializado';el.style.color='var(--danger)';return}
-    db.collection('teste').doc('conexao').get().then(function(){
-        el.textContent='🟢 Conectado — atualizações em tempo real ativas. Autenticado como: ' + (auth.currentUser ? auth.currentUser.email : 'não logado');
-        el.style.color='#2E7D32';
-        var dot=$('connection-dot');
-        dot.classList.remove('red');
-        dot.classList.add('green');
-        setStatus('Conectado');
-    }).catch(function(err){
-        el.textContent='🔴 ' + err.message;
-        el.style.color='var(--danger)';
-        var dot=$('connection-dot');
-        dot.classList.add('red');
-        dot.classList.remove('green');
-        setStatus('Desconectado');
-    });
-}
-
-/* ===== ITENS DINÂMICOS ===== */
 function renderItems(){
     var sl=$('servicesList');sl.innerHTML='';
     (config.services||[]).forEach(function(item,i){sl.appendChild(itemCard('service',i,item.title,item.description))});
@@ -776,7 +647,6 @@ function addItem(type){
     renderItems();
 }
 
-/* ===== COLETAR FORM ===== */
 function collectForm(){
     function v(id){return $(id).value.trim()}
     config.brandName=v('brandName');
@@ -811,7 +681,6 @@ function collectForm(){
     config.primaryDark=$('primaryDark').value;
     config.secondaryColor=$('secondaryColor').value;
     config.bgColor=$('bgColor').value;
-    
     config.services=[];
     document.querySelectorAll('#servicesList .item').forEach(function(el){
         config.services.push({title:el.querySelector('.field-title').value.trim(),description:el.querySelector('.field-desc').value.trim()});
@@ -826,34 +695,17 @@ function collectForm(){
     });
 }
 
-/* ===== EVENTOS ===== */
 $('adminForm').addEventListener('submit',function(e){
     e.preventDefault();
-    
-    // Verifica se está autenticado
-    if(!auth || !auth.currentUser){
-        msg('Você precisa estar logado para salvar.','error');
-        showScreen('admin');
-        return;
-    }
-    
+    if(!auth || !auth.currentUser){msg('Você precisa estar logado.','error');showScreen('admin');return}
     collectForm();
     localStorage.setItem('lp_config',JSON.stringify(config));
     applyConfig();
-    
     sessionStorage.setItem('lp_saving','1');
-    
     saveToFirebase().then(function(res){
-        if(res.ok){
-            msg('Alterações salvas e transmitidas em tempo real!','success');
-            toast('Alterações publicadas!');
-            console.log('Salvo no Firebase!');
-        }else{
-            msg('Erro no Firebase: '+res.error,'error');
-            console.error('Erro Firebase:',res.error);
-        }
+        if(res.ok){msg('Alterações salvas e transmitidas em tempo real!','success');toast('Site atualizado!')}
+        else{msg('Erro no Firebase: '+res.error,'error');toast('Erro ao salvar: '+res.error)}
         sessionStorage.setItem('lp_saving','0');
-        setStatus('Conectado');
     });
 });
 
@@ -864,54 +716,24 @@ $('form-orcamento').addEventListener('submit',function(e){
     window.open('https://wa.me/'+(window.__wa||'SEUNUMERO')+'?text='+encodeURIComponent(txt),'_blank');
 });
 
-function resetConfig(){
-    if(confirm('Restaurar configurações padrão?')){
-        config=Object.assign({},defaultConfig);
-        localStorage.setItem('lp_config',JSON.stringify(config));
-        applyConfig();
-        fillAdmin();
-        if(auth && auth.currentUser){
-            saveToFirebase().then(function(){
-                msg('Configurações restauradas e publicadas.','success');
-            });
-        }
-    }
-}
-
-/* ===== INICIALIZAÇÃO ===== */
 (function init(){
     document.body.classList.remove('admin-mode');
     applyConfig();
     watchFirebase();
-    
-    // Verifica estado do login ao carregar
     if(auth){
         auth.onAuthStateChanged(function(user){
             if(user){
                 sessionStorage.setItem('lp_auth','1');
-                if(window.location.hash === '#admin'){
-                    showScreen('admin');
-                }
+                if(location.hash==='#admin')showScreen('admin');
             }else{
                 sessionStorage.removeItem('lp_auth');
-                if(window.location.hash === '#admin'){
-                    showScreen('admin'); // leva para tela de login
-                }else{
-                    showScreen('site');
-                }
+                if(location.hash==='#admin')showScreen('admin');
+                else showScreen('site');
             }
         });
     }
-    
-    if(window.location.hash === '#admin' && auth){
-        // Deixa o onAuthStateChanged decidir
-        auth.onAuthStateChanged(function(user){
-            if(user)showScreen('admin');
-            else showScreen('admin'); // mostra tela de login
-        });
-    }else{
-        showScreen('site');
-    }
+    if(location.hash==='#admin')showScreen('admin');
+    else showScreen('site');
 })();
 </script>
 
