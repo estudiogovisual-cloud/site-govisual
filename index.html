@@ -8,8 +8,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
+
+    <!-- Firebase SDK (SEM defer para carregar antes do script principal) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
     <style>
         :root {
             --primary: #4A5A2A;
@@ -48,7 +51,7 @@
         .btn-sm { padding: 8px 16px; font-size: .8rem; }
         .btn-block { width: 100%; }
 
-        /* ===== BARRA DE ABAS (OCULTA PARA CLIENTES) ===== */
+        /* ===== BARRA DE ABAS (oculta para clientes) ===== */
         .tabs {
             position: fixed; top: 0; left: 0; right: 0; z-index: 200;
             background: var(--primary-dark); display: none; align-items: center;
@@ -198,7 +201,7 @@
 </head>
 <body>
 
-<!-- ===== BARRA DE ABAS (aparece apenas em modo admin) ===== -->
+<!-- ===== BARRA DE ABAS (aparece apenas para admin) ===== -->
 <div class="tabs" id="tabs">
     <button class="tab-btn active" id="tab-site" onclick="showScreen('site')">Site</button>
     <button class="tab-btn" id="tab-admin" onclick="showScreen('admin')">Painel</button>
@@ -515,7 +518,7 @@
 
 <script>
 /* ================================================================
-   PAINEL + SITE — VERSÃO FINAL (barra oculta para clientes)
+   PAINEL + SITE — VERSÃO FINAL COM FIREBASE CORRIGIDO
    ================================================================ */
 
 /* Configurações padrão */
@@ -749,15 +752,34 @@ function saveLocal() {
     catch (e) { return false; }
 }
 
-/* Firebase */
+/* ===== FIREBASE (CORRIGIDO) ===== */
 function initFirebase() {
+    // Verifica se o SDK foi carregado
+    if (typeof firebase === 'undefined') {
+        console.warn('Firebase SDK não carregado.');
+        return null;
+    }
+
     var fb = config.firebase || {};
-    if (!fb.apiKey || !fb.projectId) return null;
+    if (!fb.apiKey || !fb.projectId) {
+        console.warn('Credenciais Firebase incompletas.');
+        return null;
+    }
+
     try {
+        // Se já existe um app inicializado, usa ele
+        if (firebase.apps && firebase.apps.length > 0) {
+            return firebase.firestore(firebase.app());
+        }
+        // Caso contrário, inicializa novo
         firebase.initializeApp(fb);
         return firebase.firestore();
-    } catch (e) { return null; }
+    } catch (e) {
+        console.error('Erro ao inicializar Firebase:', e);
+        return null;
+    }
 }
+
 function loadRemote() {
     return new Promise(function(resolve) {
         var db = initFirebase();
@@ -765,14 +787,23 @@ function loadRemote() {
         db.collection('config').doc('site').get().then(function(doc) {
             if (doc.exists) resolve(Object.assign({}, defaultConfig, doc.data()));
             else resolve(null);
-        }).catch(function() { resolve(null); });
+        }).catch(function(err) {
+            console.error('Erro ao carregar do Firebase:', err);
+            resolve(null);
+        });
     });
 }
+
 function saveRemote() {
     return new Promise(function(resolve) {
         var db = initFirebase();
         if (!db) { resolve(false); return; }
-        db.collection('config').doc('site').set(config).then(function() { resolve(true); }).catch(function() { resolve(false); });
+        db.collection('config').doc('site').set(config).then(function() {
+            resolve(true);
+        }).catch(function(err) {
+            console.error('Erro ao salvar no Firebase:', err);
+            resolve(false);
+        });
     });
 }
 
@@ -798,7 +829,7 @@ function sha256(text) {
     });
 }
 
-/* Navegação entre telas */
+/* Navegação */
 function showScreen(name) {
     var screens = ['screen-site', 'screen-auth', 'screen-admin'];
     for (var i = 0; i < screens.length; i++) $(screens[i]).classList.remove('active');
@@ -978,8 +1009,12 @@ async function collectForm() {
     }
 
     config.firebase = {
-        apiKey: v('fbApiKey'), authDomain: v('fbAuthDomain'), projectId: v('fbProjectId'),
-        storageBucket: v('fbStorageBucket'), messagingSenderId: v('fbMessagingSenderId'), appId: v('fbAppId')
+        apiKey: v('fbApiKey'),
+        authDomain: v('fbAuthDomain'),
+        projectId: v('fbProjectId'),
+        storageBucket: v('fbStorageBucket'),
+        messagingSenderId: v('fbMessagingSenderId'),
+        appId: v('fbAppId')
     };
     collectItems();
     return true;
@@ -992,11 +1027,12 @@ $('adminForm').addEventListener('submit', async function(e) {
     if (ok === false) return;
     saveLocal();
     applyConfig();
+
     if (config.firebase && config.firebase.apiKey && config.firebase.projectId) {
         var saved = await saveRemote();
-        msg(saved ? 'Alterações salvas na nuvem.' : 'Salvo no navegador. Erro no Firebase.', saved ? 'success' : 'success');
+        msg(saved ? 'Alterações salvas na nuvem (Firebase).' : 'Salvo no navegador. Erro no Firebase — verifique suas credenciais.', saved ? 'success' : 'error');
     } else {
-        msg('Alterações salvas no navegador.', 'success');
+        msg('Alterações salvas no navegador. Configure o Firebase na seção inferior para salvar na nuvem.', 'success');
     }
     setStatus('Salvo');
 });
@@ -1116,7 +1152,7 @@ $('form-orcamento').addEventListener('submit', function(e) {
 
 /* Inicialização */
 (function init() {
-    document.body.classList.remove('admin-mode'); // Começa sem barra
+    document.body.classList.remove('admin-mode');
     applyConfig();
     setupAuthViews();
 
