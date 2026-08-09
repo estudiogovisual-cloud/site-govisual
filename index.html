@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="seo-title">Design Gráfico com Propósito</title>
+    <meta id="seo-description" name="description" content="Design gráfico para igrejas, ministérios, empresas e empreendedores.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js" defer></script>
+    <style>
+        :root {
+            --primary: #4A5A2A;
+            --primary-dark: #3A4820;
+            --secondary: #A3C585;
+            --secondary-soft: #EAF0DD;
+            --bg: #F7F5EF;
+            --white: #FFF;
+            --text: #2E3A20;
+            --text-soft: #5A6B46;
+            --border: #E5E9DC;
+            --danger: #B3452E;
+            --danger-soft: #FBE9E5;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', system-ui, sans-serif; color: var(--text); background: var(--white); line-height: 1.6; }
+        h1, h2, h3 { font-family: 'Poppins', sans-serif; color: var(--primary-dark); line-height: 1.2; }
+        a { text-decoration: none; color: inherit; }
+        img { max-width: 100%; display: block; }
+        .container { max-width: 1140px; margin: 0 auto; padding: 0 20px; }
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 13px 26px; border-radius: 10px;
+            font-family: 'Poppins', sans-serif; font-weight: 600; font-size: .92rem;
+            border: 1px solid transparent; cursor: pointer; transition: all .2s;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-outline { background: transparent; color: var(--primary); border-color: var(--primary); }
+        .btn-outline:hover { background: var(--secondary-soft); }
+        .btn-light { background: #fff; color: var(--primary); }
+        .btn-light:hover { background: var(--secondary); }
+        .btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+        .btn-danger:hover { background: var(--danger-soft); }
+        .btn-sm { padding: 8px 16px; font-size: .8rem; }
+        .btn-block { width: 100%; }
+
+        /* ===== BARRA DE ABAS (OCULTA PARA CLIENTES) ===== */
+        .tabs {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+            background: var(--primary-dark); display: none; align-items: center;
+            padding: 6px 12px; gap: 8px; box-shadow: 0 2px 12px rgba(0,0,0,.2);
+        }
+        body.admin-mode .tabs { display: flex; }
+        body:not(.admin-mode) .header { top: 0; }
+        body.admin-mode { padding-top: 52px; }
+        .tabs .tab-btn {
+            background: transparent; border: none; color: rgba(255,255,255,.7);
+            font-family: 'Poppins', sans-serif; font-weight: 600; font-size: .85rem;
+            padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all .2s;
+        }
+        .tabs .tab-btn.active { background: var(--secondary); color: var(--primary-dark); }
+        .tabs .tab-status { margin-left: auto; font-size: .72rem; color: var(--secondary); font-weight: 600; text-transform: uppercase; letter-spacing: .5px; }
+
+        /* ===== TELAS ===== */
+        .screen { display: none; min-height: 100vh; background: var(--bg); }
+        .screen.active { display: block; }
+        #screen-site.active { background: var(--white); padding: 0; min-height: auto; }
+
+        /* ===== SITE ===== */
+        .header { position: sticky; top: 52px; z-index: 50; background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border-bottom: 1px solid #EDEBE3; }
+        .header .container { display: flex; align-items: center; justify-content: space-between; height: 60px; gap: 12px; }
+        .logo { font-family: 'Poppins', sans-serif; font-weight: 800; font-size: 1.2rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+        .logo img { height: 32px; border-radius: 6px; }
+        .nav { display: flex; gap: 20px; }
+        .nav a { color: var(--primary); font-size: .88rem; font-weight: 500; }
+
+        .hero { background: var(--bg); padding: 60px 0 44px; }
+        .hero-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; }
+        .badge { display: inline-block; background: var(--secondary-soft); color: var(--primary); padding: 5px 14px; border-radius: 999px; font-size: .78rem; font-weight: 600; margin-bottom: 16px; }
+        .hero h1 { font-size: clamp(1.8rem, 5vw, 3rem); margin-bottom: 16px; }
+        .hero h1 span { color: var(--primary); }
+        .hero .subtitle { font-size: 1rem; color: var(--text-soft); margin-bottom: 28px; max-width: 480px; }
+        .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+        .hero-card { background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 24px; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+        .verse-text { font-family: 'Poppins', sans-serif; font-size: 1.05rem; color: var(--primary-dark); }
+        .verse-ref { display: block; margin-top: 10px; font-weight: 600; color: var(--primary); font-size: .9rem; }
+        .chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 16px; }
+        .chips span { background: var(--secondary-soft); color: var(--primary); padding: 5px 12px; border-radius: 999px; font-size: .76rem; font-weight: 600; }
+
+        section { padding: 56px 0; }
+        .section-label { font-size: .76rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--secondary); margin-bottom: 8px; }
+        .section-title { font-size: clamp(1.4rem, 3vw, 2.2rem); margin-bottom: 12px; }
+        .section-sub { color: var(--text-soft); max-width: 600px; margin-bottom: 32px; }
+
+        .verse-section { background: var(--primary); text-align: center; padding: 48px 0; }
+        .verse-section blockquote { font-family: 'Poppins', sans-serif; font-size: clamp(1.1rem, 3vw, 1.6rem); color: #fff; max-width: 700px; margin: 0 auto 10px; line-height: 1.6; }
+        .verse-section cite { color: var(--secondary); font-style: normal; font-weight: 600; font-size: .88rem; }
+
+        .about p { color: var(--text-soft); margin-bottom: 12px; }
+
+        .services { background: var(--bg); }
+        .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .service-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 24px 20px; transition: all .3s; }
+        .service-card:hover { transform: translateY(-4px); border-color: var(--secondary); box-shadow: 0 8px 20px rgba(0,0,0,.06); }
+        .service-card h3 { margin-bottom: 6px; font-size: 1rem; }
+        .service-card p { color: var(--text-soft); font-size: .86rem; }
+        .service-icon { width: 44px; height: 44px; border-radius: 10px; background: var(--secondary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 14px; }
+
+        .diff-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; text-align: center; }
+        .diff-item { padding: 20px 10px; }
+        .diff-check { width: 36px; height: 36px; margin: 0 auto 12px; color: var(--primary); }
+        .diff-item h3 { font-size: .9rem; margin-bottom: 6px; }
+        .diff-item p { color: var(--text-soft); font-size: .82rem; }
+
+        .offer { padding: 0; }
+        .offer-card { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius: 20px; padding: 44px 24px; text-align: center; color: #fff; }
+        .offer-tag { display: inline-block; background: rgba(255,255,255,.15); padding: 5px 14px; border-radius: 999px; font-size: .76rem; font-weight: 600; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 1px; }
+        .offer-card h2 { color: #fff; font-size: clamp(1.3rem, 4vw, 2rem); margin-bottom: 12px; }
+        .offer-card h2 span { color: var(--secondary); }
+        .offer-card p { color: rgba(255,255,255,.85); max-width: 520px; margin: 0 auto 28px; font-size: .95rem; }
+
+        .contact { background: var(--bg); }
+        .contact-grid { display: grid; grid-template-columns: .9fr 1.1fr; gap: 40px; align-items: start; }
+        .contact-info p { color: var(--text-soft); margin-bottom: 20px; }
+        .contact-info .btn { margin-bottom: 10px; }
+        .contact-note { font-size: .84rem; color: var(--text-soft); }
+        .social-links { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; }
+        .social-links a { background: var(--secondary-soft); color: var(--primary); padding: 8px 14px; border-radius: 8px; font-size: .8rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+        .contact-form { background: var(--white); border: 1px solid var(--border); border-radius: 14px; padding: 24px; box-shadow: 0 4px 16px rgba(0,0,0,.04); }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: .82rem; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 8px; font-family: inherit; font-size: .92rem; color: var(--text); background: var(--white); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--secondary); box-shadow: 0 0 0 3px var(--secondary-soft); }
+        .form-group textarea { resize: vertical; min-height: 80px; }
+        .contact-form .btn { width: 100%; }
+
+        .faq-list { max-width: 720px; margin: 0 auto; }
+        .faq-item { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 10px; overflow: hidden; background: var(--white); }
+        .faq-item button { width: 100%; background: none; border: none; padding: 16px 20px; font-family: 'Poppins', sans-serif; font-weight: 600; color: var(--primary); text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: .9rem; }
+        .faq-item button::after { content: '+'; font-size: 1.2rem; color: var(--secondary); transition: transform .3s; }
+        .faq-item.active button::after { transform: rotate(45deg); }
+        .faq-answer { max-height: 0; overflow: hidden; transition: max-height .3s; padding: 0 20px; color: var(--text-soft); font-size: .88rem; }
+        .faq-item.active .faq-answer { max-height: 250px; padding: 0 20px 18px; }
+
+        .footer { background: var(--primary-dark); color: rgba(255,255,255,.8); padding: 32px 0; text-align: center; }
+        .footer .logo { color: #fff; margin-bottom: 6px; }
+        .footer p { font-size: .82rem; margin-top: 6px; }
+        .footer .verse-footer { color: var(--secondary); font-style: italic; margin-top: 12px; }
+
+        .whatsapp-float { position: fixed; bottom: 20px; right: 20px; width: 52px; height: 52px; background: var(--primary); color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 16px rgba(0,0,0,.2); z-index: 100; transition: transform .2s; }
+        .whatsapp-float:hover { transform: scale(1.06); }
+        .whatsapp-float svg { width: 26px; height: 26px; fill: currentColor; }
+
+        /* ===== LOGIN / ADMIN ===== */
+        .auth-container { max-width: 380px; margin: 60px auto; background: var(--white); border: 1px solid var(--border); border-radius: 16px; padding: 32px; box-shadow: 0 8px 24px rgba(0,0,0,.06); }
+        .auth-container h1 { font-size: 1.2rem; text-align: center; margin-bottom: 8px; }
+        .auth-container .sub { font-size: .84rem; color: var(--text-soft); text-align: center; margin-bottom: 20px; }
+        .auth-container .form-group { margin-bottom: 16px; }
+
+        .admin-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .admin-header { text-align: center; margin-bottom: 20px; }
+        .admin-header h1 { font-size: 1.4rem; }
+        .admin-header p { color: var(--text-soft); font-size: .86rem; }
+        .admin-alert { background: #FFF8E1; border: 1px solid #F0DCA0; color: #6B5900; padding: 12px 16px; border-radius: 8px; font-size: .8rem; margin-bottom: 16px; }
+        .admin-card { background: var(--white); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
+        .admin-card h2 { font-size: .95rem; color: var(--primary); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+        .admin-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+        .admin-actions .btn { flex: 1; min-width: 140px; }
+        #message { display: none; text-align: center; padding: 10px; border-radius: 8px; font-weight: 500; margin-bottom: 12px; font-size: .85rem; }
+        #message.success { display: block; background: #E8F5E9; color: #2E7D32; }
+        #message.error { display: block; background: #FDECEA; color: var(--danger); }
+        .item { background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-bottom: 10px; position: relative; }
+        .item .remove-item { position: absolute; top: 6px; right: 6px; padding: 4px 10px; font-size: .7rem; }
+        .logo-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .logo-preview { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 2px solid var(--border); display: none; background: var(--bg); }
+        .two-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+        @media (max-width: 968px) {
+            .hero-grid { grid-template-columns: 1fr; }
+            .services-grid { grid-template-columns: repeat(2, 1fr); }
+            .diff-grid { grid-template-columns: repeat(2, 1fr); }
+            .contact-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 600px) {
+            .container { padding: 0 16px; }
+            section { padding: 40px 0; }
+            .nav { display: none; }
+            .services-grid { grid-template-columns: 1fr; }
+            .diff-grid { grid-template-columns: 1fr; }
+            .two-cols { grid-template-columns: 1fr; }
+            .admin-actions .btn { min-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ===== BARRA DE ABAS (aparece apenas em modo admin) ===== -->
+<div class="tabs" id="tabs">
+    <button class="tab-btn active" id="tab-site" onclick="showScreen('site')">Site</button>
+    <button class="tab-btn" id="tab-admin" onclick="showScreen('admin')">Painel</button>
+    <span class="tab-status" id="tab-status">Salvo</span>
+</div>
+
+<!-- ================= SITE PÚBLICO ================= -->
+<div id="screen-site" class="screen active">
+    <header class="header">
+        <div class="container">
+            <a href="#" class="logo" id="logo">Sua Marca</a>
+            <nav class="nav">
+                <a href="#sobre">Sobre</a>
+                <a href="#servicos">Serviços</a>
+                <a href="#oferta">Oferta</a>
+                <a href="#faq">Dúvidas</a>
+            </nav>
+            <a href="#contato" class="btn btn-primary btn-sm">Orçamento</a>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-grid">
+            <div>
+                <span class="badge" id="hero-badge">Atendemos igrejas, empresas e empreendedores</span>
+                <h1 id="hero-title">Design gráfico com <span>propósito</span> e excelência</h1>
+                <p class="subtitle" id="hero-subtitle">Materiais visuais para igrejas, ministérios, empresas e empreendedores que desejam comunicar com identidade, clareza e profissionalismo.</p>
+                <div class="hero-actions">
+                    <a href="#contato" class="btn btn-primary" id="cta-primary">Quero meu orçamento</a>
+                    <a href="#servicos" class="btn btn-outline" id="cta-secondary">Ver serviços</a>
+                </div>
+            </div>
+            <div class="hero-card">
+                <p class="verse-text" id="verse-text">Tudo o que fizerem, façam de todo o coração, como para o Senhor, e não para os homens.</p>
+                <span class="verse-ref" id="verse-ref">Colossenses 3:23</span>
+                <div class="chips" id="hero-chips">
+                    <span>Instagram</span><span>Folhetos</span><span>Cartazes</span><span>Cards</span><span>Slides</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="verse-section" id="verse-section">
+        <blockquote id="verse-big">Tudo o que fizerem, façam de todo o coração, como para o Senhor, e não para os homens.</blockquote>
+        <cite id="verse-big-ref">Colossenses 3:23</cite>
+    </section>
+
+    <section class="about" id="sobre">
+        <div class="container">
+            <span class="section-label">Sobre</span>
+            <h2 class="section-title" id="about-title">Cada projeto é feito com cuidado, criatividade e fidelidade à Palavra</h2>
+            <p id="about-p1">Acreditamos que a comunicação visual também é uma forma de servir. Por isso, cada arte é desenvolvida com sensibilidade bíblica, respeitando a identidade de quem contrata e levando a mensagem certa ao público certo.</p>
+            <p id="about-p2">Atendemos igrejas, ministérios, organizações cristãs, empresas e empreendedores de todos os segmentos — sempre com excelência técnica e compromisso com a verdade.</p>
+        </div>
+    </section>
+
+    <section class="services" id="servicos">
+        <div class="container">
+            <span class="section-label">Serviços</span>
+            <h2 class="section-title" id="services-title">Soluções completas para sua comunicação</h2>
+            <p class="section-sub" id="services-sub">Trabalhamos com materiais digitais e impressos, sempre com qualidade profissional.</p>
+            <div class="services-grid" id="services-grid"></div>
+        </div>
+    </section>
+
+    <section id="diferenciais">
+        <div class="container">
+            <div style="text-align:center">
+                <span class="section-label">Diferenciais</span>
+                <h2 class="section-title" id="diff-title">Por que escolher nosso trabalho?</h2>
+                <p class="section-sub" id="diff-sub" style="margin:0 auto 32px">Qualidade, propósito e compromisso em cada projeto.</p>
+            </div>
+            <div class="diff-grid" id="diff-grid"></div>
+        </div>
+    </section>
+
+    <section class="offer" id="oferta">
+        <div class="container">
+            <div class="offer-card">
+                <span class="offer-tag" id="offer-tag">Oferta por tempo limitado</span>
+                <h2 id="offer-title">Aproveite de <span>15% a 25% OFF</span> no primeiro projeto</h2>
+                <p id="offer-desc">Solicite um orçamento agora e garanta seu desconto especial para começar a cuidar da comunicação do seu negócio, igreja ou ministério.</p>
+                <a href="#contato" class="btn btn-light" id="offer-cta">Solicitar orçamento com desconto</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact" id="contato">
+        <div class="container contact-grid">
+            <div class="contact-info">
+                <span class="section-label">Contato</span>
+                <h2 class="section-title">Vamos conversar sobre o seu projeto?</h2>
+                <p id="contact-text">Preencha o formulário e a mensagem abrirá diretamente no seu WhatsApp, ou se preferir, chame agora mesmo:</p>
+                <a href="#" class="btn btn-primary" id="whatsapp-btn" target="_blank" rel="noopener">Falar no WhatsApp</a>
+                <div class="social-links">
+                    <a href="#" id="instagram-link" target="_blank" rel="noopener" style="display:none">Instagram</a>
+                    <a href="#" id="facebook-link" target="_blank" rel="noopener" style="display:none">Facebook</a>
+                </div>
+                <p class="contact-note">Respondo normalmente em horário comercial.</p>
+            </div>
+
+            <form id="form-orcamento" class="contact-form">
+                <div class="form-group"><label for="nome">Nome</label><input type="text" id="nome" placeholder="Seu nome" required></div>
+                <div class="form-group"><label for="email">E-mail</label><input type="email" id="email" placeholder="voce@email.com"></div>
+                <div class="form-group">
+                    <label for="tipo">Tipo de material</label>
+                    <select id="tipo" required>
+                        <option value="" disabled selected>Selecione uma opção</option>
+                        <option>Post para Instagram</option><option>Folheto</option><option>Cartaz</option><option>Cards digitais</option><option>Slides</option><option>Projeto personalizado</option>
+                    </select>
+                </div>
+                <div class="form-group"><label for="descricao">Conte um pouco sobre o projeto</label><textarea id="descricao" placeholder="Ex.: Preciso de um folheto para um evento..." required></textarea></div>
+                <button type="submit" class="btn btn-primary">Enviar pelo WhatsApp</button>
+            </form>
+        </div>
+    </section>
+
+    <section id="faq">
+        <div class="container">
+            <div style="text-align:center">
+                <span class="section-label">Dúvidas frequentes</span>
+                <h2 class="section-title" id="faq-title">Perguntas frequentes</h2>
+            </div>
+            <div class="faq-list" id="faq-list"></div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <span class="logo" id="footer-logo">Sua Marca</span>
+            <p id="footer-rights">© 2026 Sua Marca. Todos os direitos reservados.</p>
+            <p class="verse-footer" id="footer-verse">"Tudo o que fizerem, façam de todo o coração, como para o Senhor." — Colossenses 3:23</p>
+        </div>
+    </footer>
+
+    <a href="#" class="whatsapp-float" id="whatsapp-float" target="_blank" rel="noopener" aria-label="WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38c1.45.79 3.08 1.21 4.79 1.21h.01c5.46 0 9.9-4.45 9.9-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2zm5.83 14.02c-.25.7-1.44 1.33-2.02 1.42-.52.08-1.18.11-1.9-.12-.44-.14-1-.33-1.72-.65-3.03-1.31-5.01-4.36-5.16-4.56-.15-.2-1.23-1.64-1.23-3.13s.78-2.23 1.06-2.53c.28-.3.61-.38.81-.38.2 0 .41.01.58.01.19.01.44-.07.68.52.25.61.83 2.12.91 2.27.07.15.12.33.02.53-.1.2-.15.33-.3.51-.15.18-.32.4-.45.54-.15.15-.31.32-.13.63.18.3.8 1.32 1.72 2.13 1.18 1.05 2.18 1.38 2.49 1.53.31.15.49.13.67-.08.18-.2.77-.9.97-1.21.2-.3.4-.25.68-.15.28.1 1.76.83 2.06.98.3.15.5.23.58.35.07.13.07.73-.18 1.43z"/></svg>
+    </a>
+</div>
+
+<!-- ================= LOGIN ================= -->
+<div id="screen-auth" class="screen">
+    <div class="auth-container">
+        <h1 id="auth-title">Acesso restrito</h1>
+        <p class="sub" id="auth-sub">Painel administrativo</p>
+        <form id="auth-form">
+            <div class="form-group">
+                <label for="auth-password" id="auth-label">Senha</label>
+                <input type="password" id="auth-password" placeholder="Digite a senha" required>
+            </div>
+            <div class="form-group" id="auth-password2-group" style="display:none">
+                <label for="auth-password2">Confirme a senha</label>
+                <input type="password" id="auth-password2" placeholder="Confirme a senha">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" id="auth-btn">Entrar</button>
+        </form>
+        <div id="auth-error" style="color:var(--danger);font-size:.82rem;text-align:center;margin-top:12px;display:none"></div>
+    </div>
+</div>
+
+<!-- ================= PAINEL ADMIN ================= -->
+<div id="screen-admin" class="screen">
+    <div class="admin-container">
+        <div class="admin-header">
+            <h1>Painel de Personalização</h1>
+            <p>Deixe campos vazios para ocultá-los no site.</p>
+        </div>
+        <div class="admin-alert">
+            <strong>Armazenamento:</strong> as alterações são salvas no navegador. Configure o Firebase na seção inferior para salvar na nuvem.
+        </div>
+        <div id="message"></div>
+
+        <form id="adminForm">
+            <!-- IDENTIDADE -->
+            <div class="admin-card">
+                <h2>Identidade</h2>
+                <div class="form-group"><label for="brandName">Nome da marca</label><input type="text" id="brandName"></div>
+                <div class="form-group">
+                    <label>Logotipo</label>
+                    <div class="logo-row">
+                        <input type="file" id="logoUpload" accept="image/png,image/jpeg" style="font-size:.8rem">
+                        <img id="logoPreview" class="logo-preview" alt="Preview">
+                        <button type="button" class="btn btn-danger btn-sm" id="removeLogo">Remover</button>
+                    </div>
+                    <div style="font-size:.72rem;color:#889577">PNG ou JPG — máx. 300 KB</div>
+                </div>
+                <div class="form-group"><label for="whatsappNumber">WhatsApp (DDI + DDD + número)</label><input type="text" id="whatsappNumber" placeholder="5511999999999"></div>
+                <div class="form-group"><label for="instagramUrl">Link do Instagram</label><input type="text" id="instagramUrl" placeholder="https://instagram.com/suaempresa"></div>
+                <div class="form-group"><label for="facebookUrl">Link do Facebook</label><input type="text" id="facebookUrl" placeholder="https://facebook.com/suaempresa"></div>
+                <div class="form-group"><label for="seoTitle">Título da página (SEO)</label><input type="text" id="seoTitle"></div>
+                <div class="form-group"><label for="seoDescription">Descrição (SEO)</label><textarea id="seoDescription"></textarea></div>
+            </div>
+
+            <!-- HERO -->
+            <div class="admin-card">
+                <h2>Seção Principal (Hero)</h2>
+                <div class="form-group"><label for="heroBadge">Selo acima do título</label><input type="text" id="heroBadge"></div>
+                <div class="form-group"><label for="heroTitle">Título (use &lt;span&gt; para destacar)</label><input type="text" id="heroTitle"></div>
+                <div class="form-group"><label for="heroSubtitle">Subtítulo</label><textarea id="heroSubtitle"></textarea></div>
+                <div class="form-group"><label for="heroChips">Palavras-chave (separadas por vírgula)</label><input type="text" id="heroChips"></div>
+                <div class="two-cols">
+                    <div class="form-group"><label for="ctaPrimary">Botão principal</label><input type="text" id="ctaPrimary"></div>
+                    <div class="form-group"><label for="ctaSecondary">Botão secundário</label><input type="text" id="ctaSecondary"></div>
+                </div>
+            </div>
+
+            <!-- VERSÍCULO -->
+            <div class="admin-card">
+                <h2>Versículo em Destaque</h2>
+                <div class="form-group"><label for="verseText">Texto</label><textarea id="verseText"></textarea></div>
+                <div class="form-group"><label for="verseRef">Referência</label><input type="text" id="verseRef"></div>
+            </div>
+
+            <!-- SOBRE -->
+            <div class="admin-card">
+                <h2>Seção Sobre</h2>
+                <div class="form-group"><label for="aboutTitle">Título</label><input type="text" id="aboutTitle"></div>
+                <div class="form-group"><label for="aboutP1">Primeiro parágrafo</label><textarea id="aboutP1"></textarea></div>
+                <div class="form-group"><label for="aboutP2">Segundo parágrafo</label><textarea id="aboutP2"></textarea></div>
+            </div>
+
+            <!-- SERVIÇOS -->
+            <div class="admin-card">
+                <h2>Serviços</h2>
+                <div class="form-group"><label for="servicesTitle">Título da seção</label><input type="text" id="servicesTitle"></div>
+                <div class="form-group"><label for="servicesSub">Subtítulo</label><textarea id="servicesSub"></textarea></div>
+                <div id="servicesList"></div>
+                <button type="button" class="btn btn-outline btn-sm" id="addService">Adicionar serviço</button>
+            </div>
+
+            <!-- DIFERENCIAIS -->
+            <div class="admin-card">
+                <h2>Diferenciais</h2>
+                <div class="form-group"><label for="diffTitle">Título da seção</label><input type="text" id="diffTitle"></div>
+                <div class="form-group"><label for="diffSub">Subtítulo</label><input type="text" id="diffSub"></div>
+                <div id="diffsList"></div>
+                <button type="button" class="btn btn-outline btn-sm" id="addDiff">Adicionar diferencial</button>
+            </div>
+
+            <!-- OFERTA -->
+            <div class="admin-card">
+                <h2>Oferta de Desconto</h2>
+                <div class="form-group"><label for="offerTag">Selo</label><input type="text" id="offerTag"></div>
+                <div class="form-group"><label for="offerTitle">Título (use {destaque} para destacar)</label><input type="text" id="offerTitle"></div>
+                <div class="form-group"><label for="offerHighlight">Texto em destaque</label><input type="text" id="offerHighlight"></div>
+                <div class="form-group"><label for="offerDesc">Descrição</label><textarea id="offerDesc"></textarea></div>
+                <div class="form-group"><label for="offerCta">Texto do botão</label><input type="text" id="offerCta"></div>
+            </div>
+
+            <!-- CONTATO -->
+            <div class="admin-card">
+                <h2>Seção de Contato</h2>
+                <div class="form-group"><label for="contactText">Texto de contato</label><textarea id="contactText"></textarea></div>
+            </div>
+
+            <!-- FAQ -->
+            <div class="admin-card">
+                <h2>Perguntas Frequentes</h2>
+                <div class="form-group"><label for="faqTitle">Título da seção</label><input type="text" id="faqTitle"></div>
+                <div id="faqList"></div>
+                <button type="button" class="btn btn-outline btn-sm" id="addFaq">Adicionar pergunta</button>
+            </div>
+
+            <!-- RODAPÉ -->
+            <div class="admin-card">
+                <h2>Rodapé</h2>
+                <div class="form-group"><label for="footerRights">Direitos autorais</label><input type="text" id="footerRights"></div>
+                <div class="form-group"><label for="footerVerse">Versículo</label><textarea id="footerVerse"></textarea></div>
+            </div>
+
+            <!-- CORES -->
+            <div class="admin-card">
+                <h2>Paleta de Cores</h2>
+                <div class="two-cols">
+                    <div class="form-group"><label for="primaryColor">Cor primária</label><input type="color" id="primaryColor" value="#4A5A2A"></div>
+                    <div class="form-group"><label for="primaryDark">Cor primária escura</label><input type="color" id="primaryDark" value="#3A4820"></div>
+                    <div class="form-group"><label for="secondaryColor">Cor secundária</label><input type="color" id="secondaryColor" value="#A3C585"></div>
+                    <div class="form-group"><label for="bgColor">Cor de fundo</label><input type="color" id="bgColor" value="#F7F5EF"></div>
+                </div>
+            </div>
+
+            <!-- SEGURANÇA -->
+            <div class="admin-card">
+                <h2>Segurança</h2>
+                <div class="form-group"><label for="newPassword">Nova senha (deixe vazio para manter)</label><input type="password" id="newPassword" placeholder="Mínimo 6 caracteres"></div>
+                <div class="form-group"><label for="confirmPassword">Confirmar nova senha</label><input type="password" id="confirmPassword" placeholder="Repita"></div>
+            </div>
+
+            <!-- FIREBASE -->
+            <div class="admin-card">
+                <h2>Firebase (para salvar na nuvem)</h2>
+                <div class="two-cols">
+                    <div class="form-group"><label for="fbApiKey">API Key</label><input type="text" id="fbApiKey" placeholder="AIza..."></div>
+                    <div class="form-group"><label for="fbAuthDomain">Auth Domain</label><input type="text" id="fbAuthDomain" placeholder="projeto.firebaseapp.com"></div>
+                    <div class="form-group"><label for="fbProjectId">Project ID</label><input type="text" id="fbProjectId" placeholder="projeto"></div>
+                    <div class="form-group"><label for="fbStorageBucket">Storage Bucket</label><input type="text" id="fbStorageBucket" placeholder="projeto.appspot.com"></div>
+                    <div class="form-group"><label for="fbMessagingSenderId">Messaging Sender ID</label><input type="text" id="fbMessagingSenderId" placeholder="000000000000"></div>
+                    <div class="form-group"><label for="fbAppId">App ID</label><input type="text" id="fbAppId" placeholder="1:000:web:xxx"></div>
+                </div>
+            </div>
+
+            <!-- AÇÕES -->
+            <div class="admin-actions">
+                <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-outline" onclick="showScreen('site')">Ver Site</button>
+                <button type="button" class="btn btn-outline" id="exportBtn">Exportar JSON</button>
+                <button type="button" class="btn btn-outline" id="importBtn">Importar JSON</button>
+                <button type="button" class="btn btn-danger" id="resetBtn">Restaurar Padrão</button>
+                <input type="file" id="importFile" accept=".json" style="display:none">
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+/* ================================================================
+   PAINEL + SITE — VERSÃO FINAL (barra oculta para clientes)
+   ================================================================ */
+
+/* Configurações padrão */
+var defaultConfig = {
+    brandName: 'Sua Marca',
+    logoImage: '',
+    whatsappNumber: '',
+    instagramUrl: '',
+    facebookUrl: '',
+    seoTitle: 'Design Gráfico com Propósito | Sua Marca',
+    seoDescription: 'Design gráfico para igrejas, ministérios, empresas e empreendedores.',
+    heroBadge: 'Atendemos igrejas, empresas e empreendedores',
+    heroTitle: 'Design gráfico com <span>propósito</span> e excelência',
+    heroSubtitle: 'Materiais visuais para igrejas, ministérios, empresas e empreendedores que desejam comunicar com identidade, clareza e profissionalismo.',
+    heroChips: ['Instagram', 'Folhetos', 'Cartazes', 'Cards', 'Slides'],
+    ctaPrimary: 'Quero meu orçamento',
+    ctaSecondary: 'Ver serviços',
+    verseText: 'Tudo o que fizerem, façam de todo o coração, como para o Senhor, e não para os homens.',
+    verseRef: 'Colossenses 3:23',
+    aboutTitle: 'Cada projeto é feito com cuidado, criatividade e fidelidade à Palavra',
+    aboutP1: 'Acreditamos que a comunicação visual também é uma forma de servir.',
+    aboutP2: 'Atendemos igrejas, ministérios, organizações cristãs, empresas e empreendedores.',
+    servicesTitle: 'Soluções completas para sua comunicação',
+    servicesSub: 'Trabalhamos com materiais digitais e impressos.',
+    services: [
+        { title: 'Posts para Instagram', description: 'Artes atrativas para suas redes sociais.' },
+        { title: 'Folhetos', description: 'Materiais impressos para eventos e campanhas.' },
+        { title: 'Cartazes', description: 'Peças de grande impacto para comunicação.' },
+        { title: 'Cards digitais', description: 'Cards para WhatsApp e e-mail marketing.' },
+        { title: 'Slides', description: 'Apresentações limpas e modernas.' },
+        { title: 'Projeto personalizado', description: 'Projetos sob medida para sua necessidade.' }
+    ],
+    diffTitle: 'Por que escolher nosso trabalho?',
+    diffSub: 'Qualidade, propósito e compromisso.',
+    diffs: [
+        { title: 'Identidade cristã', description: 'Design que respeita a Palavra.' },
+        { title: 'Atendimento personalizado', description: 'Cada projeto é único.' },
+        { title: 'Qualidade profissional', description: 'Material pronto para uso.' },
+        { title: 'Comunicação clara', description: 'Mensagem certa ao público certo.' }
+    ],
+    offerTag: 'Oferta por tempo limitado',
+    offerTitle: 'Aproveite de {destaque} no primeiro projeto',
+    offerHighlight: '15% a 25% OFF',
+    offerDesc: 'Solicite um orçamento e garanta seu desconto especial.',
+    offerCta: 'Solicitar orçamento com desconto',
+    contactText: 'Preencha o formulário e a mensagem abrirá no seu WhatsApp.',
+    faqTitle: 'Perguntas frequentes',
+    faqs: [
+        { question: 'Quanto custa um projeto?', answer: 'O valor varia conforme o tipo e a complexidade.' },
+        { question: 'Qual o prazo de entrega?', answer: 'Entre 3 e 7 dias úteis.' },
+        { question: 'Atendem igrejas e empresas?', answer: 'Atendemos todos os públicos.' }
+    ],
+    footerRights: '© 2026 Sua Marca. Todos os direitos reservados.',
+    footerVerse: '"Tudo o que fizerem, façam de todo o coração, como para o Senhor." — Colossenses 3:23',
+    primaryColor: '#4A5A2A',
+    primaryDark: '#3A4820',
+    secondaryColor: '#A3C585',
+    bgColor: '#F7F5EF',
+    adminHash: '',
+    firebase: { apiKey: '', authDomain: '', projectId: '', storageBucket: '', messagingSenderId: '', appId: '' }
+};
+
+/* Carregar configurações */
+var config = {};
+try {
+    var saved = localStorage.getItem('lp_config');
+    config = saved ? Object.assign({}, defaultConfig, JSON.parse(saved)) : Object.assign({}, defaultConfig);
+} catch (e) {
+    config = Object.assign({}, defaultConfig);
+}
+
+/* Helpers */
+function $(id) { return document.getElementById(id); }
+
+function setContent(id, value, isHtml) {
+    var el = $(id);
+    if (!el) return;
+    if (value) {
+        if (isHtml) el.innerHTML = value;
+        else el.textContent = value;
+        el.style.display = '';
+    } else {
+        el.style.display = 'none';
+        el.textContent = '';
+    }
+}
+
+function esc(s) {
+    return String(s || '').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+function msg(text, type) {
+    var m = $('message');
+    m.textContent = text;
+    m.className = type;
+    clearTimeout(m._t);
+    m._t = setTimeout(function() { m.style.display = 'none'; }, 4000);
+}
+
+function setStatus(s) { $('tab-status').textContent = s; }
+function markDirty() { setStatus('Pendente'); }
+
+/* Aplicar configuração no site */
+function applyConfig() {
+    if (config.seoTitle) document.title = config.seoTitle;
+    if (config.seoDescription) {
+        var m = $('seo-description');
+        if (m) m.content = config.seoDescription;
+    }
+
+    if (config.brandName) {
+        setContent('logo', config.brandName, false);
+        setContent('footer-logo', config.brandName, false);
+    } else {
+        setContent('logo', '', false);
+        setContent('footer-logo', '', false);
+    }
+    if (config.logoImage) {
+        setContent('logo', '<img src="' + config.logoImage + '" alt="Logo">', true);
+        setContent('footer-logo', '<img src="' + config.logoImage + '" alt="Logo">', true);
+    }
+
+    setContent('hero-badge', config.heroBadge, false);
+    setContent('hero-title', config.heroTitle, true);
+    setContent('hero-subtitle', config.heroSubtitle, false);
+    setContent('cta-primary', config.ctaPrimary, false);
+    setContent('cta-secondary', config.ctaSecondary, false);
+
+    var chipsEl = $('hero-chips');
+    if (config.heroChips && config.heroChips.length) {
+        chipsEl.innerHTML = config.heroChips.map(function(c) { return '<span>' + c + '</span>'; }).join('');
+        chipsEl.style.display = '';
+    } else {
+        chipsEl.innerHTML = '';
+        chipsEl.style.display = 'none';
+    }
+
+    setContent('verse-text', config.verseText, false);
+    setContent('verse-ref', config.verseRef, false);
+    setContent('verse-big', config.verseText, false);
+    setContent('verse-big-ref', config.verseRef, false);
+    var verseSection = document.querySelector('.verse-section');
+    if (verseSection) verseSection.style.display = config.verseText ? '' : 'none';
+
+    setContent('about-title', config.aboutTitle, false);
+    setContent('about-p1', config.aboutP1, false);
+    setContent('about-p2', config.aboutP2, false);
+
+    setContent('services-title', config.servicesTitle, false);
+    setContent('services-sub', config.servicesSub, false);
+    var servicesGrid = $('services-grid');
+    if (config.services && config.services.length) {
+        var servicesHtml = config.services.filter(function(s) { return s.title && s.description; }).map(function(s) {
+            return '<article class="service-card"><div class="service-icon">✦</div><h3>' + s.title + '</h3><p>' + s.description + '</p></article>';
+        }).join('');
+        servicesGrid.innerHTML = servicesHtml;
+        servicesGrid.style.display = servicesHtml ? '' : 'none';
+    } else {
+        servicesGrid.innerHTML = '';
+        servicesGrid.style.display = 'none';
+    }
+
+    setContent('diff-title', config.diffTitle, false);
+    setContent('diff-sub', config.diffSub, false);
+    var diffGrid = $('diff-grid');
+    if (config.diffs && config.diffs.length) {
+        var diffHtml = config.diffs.filter(function(d) { return d.title && d.description; }).map(function(d) {
+            return '<div class="diff-item"><svg class="diff-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 12l3 3 5-6"/></svg><h3>' + d.title + '</h3><p>' + d.description + '</p></div>';
+        }).join('');
+        diffGrid.innerHTML = diffHtml;
+        diffGrid.style.display = diffHtml ? '' : 'none';
+    } else {
+        diffGrid.innerHTML = '';
+        diffGrid.style.display = 'none';
+    }
+
+    setContent('offer-tag', config.offerTag, false);
+    if (config.offerTitle) {
+        $('offer-title').innerHTML = config.offerTitle.replace('{destaque}', '<span>' + (config.offerHighlight || '') + '</span>');
+        $('offer-title').style.display = '';
+    } else {
+        $('offer-title').innerHTML = '';
+        $('offer-title').style.display = 'none';
+    }
+    setContent('offer-desc', config.offerDesc, false);
+    setContent('offer-cta', config.offerCta, false);
+
+    setContent('contact-text', config.contactText, false);
+
+    setContent('faq-title', config.faqTitle, false);
+    var faqList = $('faq-list');
+    if (config.faqs && config.faqs.length) {
+        var faqHtml = config.faqs.filter(function(f) { return f.question && f.answer; }).map(function(f) {
+            return '<div class="faq-item"><button type="button">' + f.question + '</button><div class="faq-answer"><p>' + f.answer + '</p></div></div>';
+        }).join('');
+        faqList.innerHTML = faqHtml;
+        faqList.style.display = faqHtml ? '' : 'none';
+    } else {
+        faqList.innerHTML = '';
+        faqList.style.display = 'none';
+    }
+
+    setContent('footer-rights', config.footerRights, false);
+    setContent('footer-verse', config.footerVerse, false);
+
+    if (config.primaryColor) document.documentElement.style.setProperty('--primary', config.primaryColor);
+    if (config.primaryDark) document.documentElement.style.setProperty('--primary-dark', config.primaryDark);
+    if (config.secondaryColor) document.documentElement.style.setProperty('--secondary', config.secondaryColor);
+    if (config.bgColor) document.documentElement.style.setProperty('--bg', config.bgColor);
+
+    var wa = config.whatsappNumber || 'SEUNUMERO';
+    window.__wa = wa;
+    var wab = 'https://wa.me/' + wa + '?text=' + encodeURIComponent('Olá! Quero um orçamento de design gráfico.');
+    $('whatsapp-btn').href = wab;
+    $('whatsapp-float').href = wab;
+
+    var ig = $('instagram-link');
+    var fb = $('facebook-link');
+    if (config.instagramUrl) { ig.href = config.instagramUrl; ig.style.display = 'inline-flex'; } else { ig.style.display = 'none'; }
+    if (config.facebookUrl) { fb.href = config.facebookUrl; fb.style.display = 'inline-flex'; } else { fb.style.display = 'none'; }
+
+    var faqButtons = document.querySelectorAll('.faq-item button');
+    for (var i = 0; i < faqButtons.length; i++) {
+        faqButtons[i].onclick = function() { this.parentElement.classList.toggle('active'); };
+    }
+}
+
+/* Salvar local */
+function saveLocal() {
+    try { localStorage.setItem('lp_config', JSON.stringify(config)); return true; }
+    catch (e) { return false; }
+}
+
+/* Firebase */
+function initFirebase() {
+    var fb = config.firebase || {};
+    if (!fb.apiKey || !fb.projectId) return null;
+    try {
+        firebase.initializeApp(fb);
+        return firebase.firestore();
+    } catch (e) { return null; }
+}
+function loadRemote() {
+    return new Promise(function(resolve) {
+        var db = initFirebase();
+        if (!db) { resolve(null); return; }
+        db.collection('config').doc('site').get().then(function(doc) {
+            if (doc.exists) resolve(Object.assign({}, defaultConfig, doc.data()));
+            else resolve(null);
+        }).catch(function() { resolve(null); });
+    });
+}
+function saveRemote() {
+    return new Promise(function(resolve) {
+        var db = initFirebase();
+        if (!db) { resolve(false); return; }
+        db.collection('config').doc('site').set(config).then(function() { resolve(true); }).catch(function() { resolve(false); });
+    });
+}
+
+/* SHA-256 */
+function sha256(text) {
+    return new Promise(function(resolve) {
+        if (!window.crypto || !crypto.subtle) {
+            var hash = 0;
+            for (var i = 0; i < text.length; i++) {
+                var chr = text.charCodeAt(i);
+                hash = ((hash << 5) - hash) + chr;
+                hash |= 0;
+            }
+            resolve(String(Math.abs(hash)));
+            return;
+        }
+        var data = new TextEncoder().encode(text);
+        crypto.subtle.digest('SHA-256', data).then(function(buf) {
+            var arr = Array.from(new Uint8Array(buf));
+            var hex = arr.map(function(b) { return b.toString(16).padStart(2, '0'); }).join('');
+            resolve(hex);
+        });
+    });
+}
+
+/* Navegação entre telas */
+function showScreen(name) {
+    var screens = ['screen-site', 'screen-auth', 'screen-admin'];
+    for (var i = 0; i < screens.length; i++) $(screens[i]).classList.remove('active');
+    $('tab-site').classList.remove('active');
+    $('tab-admin').classList.remove('active');
+
+    if (name === 'site') {
+        if (sessionStorage.getItem('lp_auth') !== '1') {
+            document.body.classList.remove('admin-mode');
+        }
+        applyConfig();
+        $('screen-site').classList.add('active');
+        $('tab-site').classList.add('active');
+    } else if (name === 'admin') {
+        if (sessionStorage.getItem('lp_auth') === '1' || !config.adminHash) {
+            document.body.classList.add('admin-mode');
+            $('screen-admin').classList.add('active');
+            $('tab-admin').classList.add('active');
+            fillAdmin();
+        } else {
+            document.body.classList.add('admin-mode');
+            $('screen-auth').classList.add('active');
+            $('tab-admin').classList.add('active');
+        }
+    }
+    window.scrollTo(0, 0);
+}
+
+/* Preencher admin */
+function fillAdmin() {
+    var c = config;
+    $('brandName').value = c.brandName || '';
+    $('whatsappNumber').value = c.whatsappNumber || '';
+    $('instagramUrl').value = c.instagramUrl || '';
+    $('facebookUrl').value = c.facebookUrl || '';
+    $('seoTitle').value = c.seoTitle || '';
+    $('seoDescription').value = c.seoDescription || '';
+    $('heroBadge').value = c.heroBadge || '';
+    $('heroTitle').value = c.heroTitle || '';
+    $('heroSubtitle').value = c.heroSubtitle || '';
+    $('heroChips').value = (c.heroChips || []).join(', ');
+    $('ctaPrimary').value = c.ctaPrimary || '';
+    $('ctaSecondary').value = c.ctaSecondary || '';
+    $('verseText').value = c.verseText || '';
+    $('verseRef').value = c.verseRef || '';
+    $('aboutTitle').value = c.aboutTitle || '';
+    $('aboutP1').value = c.aboutP1 || '';
+    $('aboutP2').value = c.aboutP2 || '';
+    $('servicesTitle').value = c.servicesTitle || '';
+    $('servicesSub').value = c.servicesSub || '';
+    $('diffTitle').value = c.diffTitle || '';
+    $('diffSub').value = c.diffSub || '';
+    $('offerTag').value = c.offerTag || '';
+    $('offerTitle').value = c.offerTitle || '';
+    $('offerHighlight').value = c.offerHighlight || '';
+    $('offerDesc').value = c.offerDesc || '';
+    $('offerCta').value = c.offerCta || '';
+    $('contactText').value = c.contactText || '';
+    $('faqTitle').value = c.faqTitle || '';
+    $('footerRights').value = c.footerRights || '';
+    $('footerVerse').value = c.footerVerse || '';
+    $('primaryColor').value = c.primaryColor || '#4A5A2A';
+    $('primaryDark').value = c.primaryDark || '#3A4820';
+    $('secondaryColor').value = c.secondaryColor || '#A3C585';
+    $('bgColor').value = c.bgColor || '#F7F5EF';
+    $('newPassword').value = '';
+    $('confirmPassword').value = '';
+
+    var fb = c.firebase || {};
+    $('fbApiKey').value = fb.apiKey || '';
+    $('fbAuthDomain').value = fb.authDomain || '';
+    $('fbProjectId').value = fb.projectId || '';
+    $('fbStorageBucket').value = fb.storageBucket || '';
+    $('fbMessagingSenderId').value = fb.messagingSenderId || '';
+    $('fbAppId').value = fb.appId || '';
+
+    if (c.logoImage) {
+        var p = $('logoPreview');
+        p.src = c.logoImage;
+        p.style.display = 'block';
+    }
+
+    renderItems();
+    setStatus('Salvo');
+}
+
+/* Itens dinâmicos */
+function renderItems() {
+    renderList('services', ['title', 'description'], ['Título', 'Descrição']);
+    renderList('diffs', ['title', 'description'], ['Título', 'Descrição']);
+    renderList('faqs', ['question', 'answer'], ['Pergunta', 'Resposta']);
+}
+function renderList(key, fields, labels) {
+    var listId = key === 'services' ? 'servicesList' : key === 'diffs' ? 'diffsList' : 'faqList';
+    var list = $(listId);
+    list.innerHTML = '';
+    (config[key] || []).forEach(function(item, i) {
+        var div = document.createElement('div');
+        div.className = 'item';
+        var html = '<button type="button" class="btn btn-danger btn-sm remove-item">Remover</button>';
+        for (var f = 0; f < fields.length; f++) {
+            var field = fields[f];
+            var label = labels[f];
+            if (field === 'description' || field === 'answer') {
+                html += '<div class="form-group"><label>' + label + '</label><textarea class="field-' + field + '">' + esc(item[field]) + '</textarea></div>';
+            } else {
+                html += '<div class="form-group"><label>' + label + '</label><input type="text" class="field-' + field + '" value="' + esc(item[field]) + '"></div>';
+            }
+        }
+        div.innerHTML = html;
+        div.querySelector('.remove-item').onclick = function() {
+            config[key].splice(i, 1);
+            renderItems();
+            markDirty();
+        };
+        list.appendChild(div);
+    });
+}
+function collectItems() {
+    document.querySelectorAll('#servicesList .item').forEach(function(el, i) {
+        config.services[i] = { title: el.querySelector('.field-title').value.trim(), description: el.querySelector('.field-desc').value.trim() };
+    });
+    document.querySelectorAll('#diffsList .item').forEach(function(el, i) {
+        config.diffs[i] = { title: el.querySelector('.field-title').value.trim(), description: el.querySelector('.field-desc').value.trim() };
+    });
+    document.querySelectorAll('#faqList .item').forEach(function(el, i) {
+        config.faqs[i] = { question: el.querySelector('.field-question').value.trim(), answer: el.querySelector('.field-answer').value.trim() };
+    });
+}
+
+/* Coletar formulário */
+async function collectForm() {
+    function v(id) { return $(id).value.trim(); }
+    config.brandName = v('brandName') || 'Sua Marca';
+    config.whatsappNumber = v('whatsappNumber').replace(/\D/g, '');
+    config.instagramUrl = v('instagramUrl');
+    config.facebookUrl = v('facebookUrl');
+    config.seoTitle = v('seoTitle');
+    config.seoDescription = v('seoDescription');
+    config.heroBadge = v('heroBadge');
+    config.heroTitle = v('heroTitle');
+    config.heroSubtitle = v('heroSubtitle');
+    config.heroChips = v('heroChips').split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+    config.ctaPrimary = v('ctaPrimary');
+    config.ctaSecondary = v('ctaSecondary');
+    config.verseText = v('verseText');
+    config.verseRef = v('verseRef');
+    config.aboutTitle = v('aboutTitle');
+    config.aboutP1 = v('aboutP1');
+    config.aboutP2 = v('aboutP2');
+    config.servicesTitle = v('servicesTitle');
+    config.servicesSub = v('servicesSub');
+    config.diffTitle = v('diffTitle');
+    config.diffSub = v('diffSub');
+    config.offerTag = v('offerTag');
+    config.offerTitle = v('offerTitle');
+    config.offerHighlight = v('offerHighlight');
+    config.offerDesc = v('offerDesc');
+    config.offerCta = v('offerCta');
+    config.contactText = v('contactText');
+    config.faqTitle = v('faqTitle');
+    config.footerRights = v('footerRights');
+    config.footerVerse = v('footerVerse');
+    config.primaryColor = $('primaryColor').value;
+    config.primaryDark = $('primaryDark').value;
+    config.secondaryColor = $('secondaryColor').value;
+    config.bgColor = $('bgColor').value;
+
+    var np = $('newPassword').value;
+    var cp = $('confirmPassword').value;
+    if (np || cp) {
+        if (np !== cp) { msg('As senhas não coincidem.', 'error'); return false; }
+        if (np.length < 6) { msg('A senha deve ter no mínimo 6 caracteres.', 'error'); return false; }
+        config.adminHash = await sha256(np);
+        $('newPassword').value = '';
+        $('confirmPassword').value = '';
+    }
+
+    config.firebase = {
+        apiKey: v('fbApiKey'), authDomain: v('fbAuthDomain'), projectId: v('fbProjectId'),
+        storageBucket: v('fbStorageBucket'), messagingSenderId: v('fbMessagingSenderId'), appId: v('fbAppId')
+    };
+    collectItems();
+    return true;
+}
+
+/* Eventos do admin */
+$('adminForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var ok = await collectForm();
+    if (ok === false) return;
+    saveLocal();
+    applyConfig();
+    if (config.firebase && config.firebase.apiKey && config.firebase.projectId) {
+        var saved = await saveRemote();
+        msg(saved ? 'Alterações salvas na nuvem.' : 'Salvo no navegador. Erro no Firebase.', saved ? 'success' : 'success');
+    } else {
+        msg('Alterações salvas no navegador.', 'success');
+    }
+    setStatus('Salvo');
+});
+
+$('addService').onclick = function() { config.services.push({ title: '', description: '' }); renderItems(); markDirty(); };
+$('addDiff').onclick = function() { config.diffs.push({ title: '', description: '' }); renderItems(); markDirty(); };
+$('addFaq').onclick = function() { config.faqs.push({ question: '', answer: '' }); renderItems(); markDirty(); };
+
+/* Logo */
+$('logoUpload').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 300 * 1024) { msg('Imagem muito grande (máx. 300 KB).', 'error'); e.target.value = ''; return; }
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+        config.logoImage = ev.target.result;
+        var p = $('logoPreview');
+        p.src = ev.target.result;
+        p.style.display = 'block';
+        markDirty();
+    };
+    reader.readAsDataURL(file);
+});
+$('removeLogo').onclick = function() {
+    config.logoImage = '';
+    $('logoPreview').style.display = 'none';
+    $('logoUpload').value = '';
+    markDirty();
+};
+
+/* Exportar / Importar / Reset */
+$('exportBtn').onclick = function() {
+    collectForm().then(function() {
+        var blob = new Blob([JSON.stringify(config, null, 2)], { type: 'application/json' });
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'configuracao-site.json';
+        a.click();
+        URL.revokeObjectURL(a.href);
+        msg('Configurações exportadas.', 'success');
+    });
+};
+$('importBtn').onclick = function() { $('importFile').click(); };
+$('importFile').addEventListener('change', function(e) {
+    var file = e.target.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(ev) {
+        try {
+            var imported = JSON.parse(ev.target.result);
+            config = Object.assign({}, defaultConfig, imported);
+            saveLocal();
+            applyConfig();
+            fillAdmin();
+            msg('Configurações importadas.', 'success');
+        } catch (err) { msg('Arquivo inválido.', 'error'); }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+});
+$('resetBtn').onclick = function() {
+    if (confirm('Restaurar para o padrão?')) {
+        config = Object.assign({}, defaultConfig);
+        saveLocal();
+        applyConfig();
+        fillAdmin();
+        msg('Configurações restauradas.', 'success');
+    }
+};
+
+/* Autenticação */
+$('auth-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    var p1 = $('auth-password').value;
+    var p2 = $('auth-password2').value;
+    $('auth-error').style.display = 'none';
+    if (!config.adminHash) {
+        if (p1.length < 6) { $('auth-error').textContent = 'Mínimo 6 caracteres.'; $('auth-error').style.display = 'block'; return; }
+        if (p1 !== p2) { $('auth-error').textContent = 'As senhas não coincidem.'; $('auth-error').style.display = 'block'; return; }
+        config.adminHash = await sha256(p1);
+        saveLocal();
+        sessionStorage.setItem('lp_auth', '1');
+        setupAuthViews();
+        showScreen('admin');
+        msg('Senha definida com sucesso.', 'success');
+        return;
+    }
+    var hash = await sha256(p1);
+    if (hash === config.adminHash) {
+        sessionStorage.setItem('lp_auth', '1');
+        showScreen('admin');
+    } else {
+        $('auth-error').textContent = 'Senha incorreta.';
+        $('auth-error').style.display = 'block';
+    }
+});
+function setupAuthViews() {
+    var hasPass = !!config.adminHash;
+    $('auth-title').textContent = hasPass ? 'Acesso restrito' : 'Defina a senha';
+    $('auth-sub').textContent = hasPass ? 'Painel administrativo' : 'Primeiro acesso — crie sua senha';
+    $('auth-label').textContent = hasPass ? 'Senha' : 'Nova senha';
+    $('auth-password2-group').style.display = hasPass ? 'none' : 'block';
+    $('auth-btn').textContent = hasPass ? 'Entrar' : 'Criar senha e entrar';
+}
+
+/* Formulário de contato */
+$('form-orcamento').addEventListener('submit', function(e) {
+    e.preventDefault();
+    var nome = $('nome').value.trim();
+    var email = $('email').value.trim();
+    var tipo = $('tipo').value;
+    var desc = $('descricao').value.trim();
+    var wa = window.__wa || 'SEUNUMERO';
+    var txt = 'Olá! Meu nome é ' + nome + '.\nTenho interesse em um orçamento.\n\nTipo: ' + tipo + '\nE-mail: ' + (email || '-') + '\n\n' + desc;
+    window.open('https://wa.me/' + wa + '?text=' + encodeURIComponent(txt), '_blank');
+});
+
+/* Inicialização */
+(function init() {
+    document.body.classList.remove('admin-mode'); // Começa sem barra
+    applyConfig();
+    setupAuthViews();
+
+    loadRemote().then(function(remote) {
+        if (remote) {
+            config = remote;
+            saveLocal();
+            applyConfig();
+        }
+    });
+
+    if (window.location.hash === '#admin') showScreen('admin');
+    else showScreen('site');
+})();
+</script>
+
+</body>
+</html>
