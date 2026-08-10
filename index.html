@@ -101,8 +101,9 @@
         .admin-container{max-width:900px;margin:0 auto;padding:20px}
         .admin-header{text-align:center;margin-bottom:20px}
         .admin-alert{background:#FFF8E1;border:1px solid #F0DCA0;color:#6B5900;padding:12px 16px;border-radius:8px;font-size:.8rem;margin-bottom:16px}
-        .admin-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px}
+        .admin-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:16px;position:relative}
         .admin-card h2{font-size:.95rem;color:var(--primary);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border)}
+        .admin-card .card-save{position:absolute;top:14px;right:14px}
         .admin-actions{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
         .admin-actions .btn{flex:1;min-width:140px}
         #message{display:none;text-align:center;padding:10px;border-radius:8px;margin-bottom:12px;font-size:.85rem}
@@ -138,6 +139,55 @@
         .fixed-option-item{display:flex;gap:8px;align-items:center;margin-bottom:8px}
         .fixed-option-item input{flex:1;padding:8px 10px;border:1px solid var(--border);border-radius:6px;font-family:inherit;font-size:.85rem}
         .fixed-option-item .remove-btn{background:none;border:none;color:var(--danger);cursor:pointer;font-size:1.2rem;line-height:1;padding:4px}
+
+        /* Select estilizado */
+        .select-wrapper{position:relative}
+        .select-wrapper select{
+            appearance:none;
+            -webkit-appearance:none;
+            -moz-appearance:none;
+            width:100%;
+            padding:12px 40px 12px 14px;
+            border:1px solid var(--border);
+            border-radius:8px;
+            font-family:inherit;
+            font-size:.9rem;
+            background:#fff;
+            cursor:pointer;
+            transition:border-color .2s;
+        }
+        .select-wrapper select:focus{outline:none;border-color:var(--primary)}
+        .select-wrapper .select-arrow{
+            position:absolute;
+            top:50%;
+            right:14px;
+            transform:translateY(-50%);
+            pointer-events:none;
+            color:var(--primary);
+            width:16px;
+            height:16px;
+        }
+        .select-wrapper .select-arrow::before{
+            content:'';
+            display:block;
+            width:8px;
+            height:8px;
+            border-right:2px solid currentColor;
+            border-bottom:2px solid currentColor;
+            transform:rotate(45deg);
+            margin-top:-4px;
+        }
+        optgroup{
+            font-style:normal;
+            font-weight:600;
+            color:var(--primary);
+            background:var(--secondary-soft);
+            padding:6px 10px;
+        }
+        option{
+            font-weight:400;
+            background:#fff;
+        }
         @media(max-width:968px){.hero-grid,.contact-grid{grid-template-columns:1fr}.services-grid{grid-template-columns:repeat(2,1fr)}.diff-grid{grid-template-columns:repeat(2,1fr)}}
         @media(max-width:600px){.nav{display:none}.services-grid,.diff-grid,.two-cols{grid-template-columns:1fr}}
     </style>
@@ -189,7 +239,6 @@
         </div>
     </section>
 
-    <!-- SERVIÇOS PRECIFICADOS -->
     <section class="services" id="servicos">
         <div class="container">
             <span class="section-label">Serviços e Pacotes</span>
@@ -238,9 +287,12 @@
                 </div>
                 <div class="form-group">
                     <label>Escolher serviço</label>
-                    <select id="tipo" required>
-                        <option value="" disabled selected>Selecione uma opção</option>
-                    </select>
+                    <div class="select-wrapper">
+                        <select id="tipo" required>
+                            <option value="" disabled selected>Selecione uma opção</option>
+                        </select>
+                        <span class="select-arrow"></span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <p style="font-size:.85rem;color:var(--text-soft);margin-bottom:10px">Tem alguma dúvida ou quer conversar antes de decidir? Clique abaixo e fale comigo no WhatsApp. Será um prazer te atender!</p>
@@ -317,6 +369,7 @@
 
         <form id="adminForm">
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('identidade')">Salvar seção</button>
                 <h2>Identidade</h2>
                 <div class="form-group"><label>Nome da marca</label><input type="text" id="brandName"></div>
                 <div class="form-group"><label>WhatsApp (com DDI)</label><input type="text" id="whatsappNumber" placeholder="5511999999999"></div>
@@ -325,6 +378,7 @@
             </div>
 
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('principal')">Salvar seção</button>
                 <h2>Seção Principal</h2>
                 <div class="form-group"><label>Selo</label><input type="text" id="heroBadge"></div>
                 <div class="form-group"><label>Título (use &lt;span&gt; para destacar)</label><input type="text" id="heroTitle"></div>
@@ -337,20 +391,22 @@
             </div>
 
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('versiculo')">Salvar seção</button>
                 <h2>Versículo</h2>
                 <div class="form-group"><label>Texto</label><textarea id="verseText"></textarea></div>
                 <div class="form-group"><label>Referência</label><input type="text" id="verseRef"></div>
             </div>
 
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('sobre')">Salvar seção</button>
                 <h2>Sobre</h2>
                 <div class="form-group"><label>Título</label><input type="text" id="aboutTitle"></div>
                 <div class="form-group"><label>Parágrafo 1</label><textarea id="aboutP1"></textarea></div>
                 <div class="form-group"><label>Parágrafo 2</label><textarea id="aboutP2"></textarea></div>
             </div>
 
-            <!-- PRODUTOS -->
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('produtos')">Salvar seção</button>
                 <h2>Produtos / Serviços (dinâmicos)</h2>
                 <div class="form-group"><label>Título da seção</label><input type="text" id="servicesTitle"></div>
                 <div class="form-group"><label>Subtítulo</label><textarea id="servicesSub"></textarea></div>
@@ -358,16 +414,16 @@
                 <button type="button" class="btn btn-outline" onclick="addItem('products')">Adicionar produto</button>
             </div>
 
-            <!-- OPÇÕES FIXAS -->
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('opcoesfixas')">Salvar seção</button>
                 <h2>Opções fixas do formulário</h2>
                 <p style="font-size:.8rem;color:var(--text-soft);margin-bottom:12px">Essas opções aparecem abaixo dos produtos no campo "Escolher serviço", separadas por uma barra.</p>
                 <div id="fixedOptionsList"></div>
                 <button type="button" class="btn btn-outline" onclick="addItem('fixedOptions')">Adicionar opção fixa</button>
             </div>
 
-            <!-- PIX -->
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('pix')">Salvar seção</button>
                 <h2>Configuração do PIX</h2>
                 <div class="form-group"><label>Chave PIX (CPF, CNPJ, e-mail ou telefone)</label><input type="text" id="pixKey" placeholder="seuemail@gmail.com"></div>
                 <div class="form-group"><label>Nome do beneficiário</label><input type="text" id="pixName" placeholder="Seu Nome ou Empresa"></div>
@@ -376,6 +432,7 @@
             </div>
 
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('diferenciais')">Salvar seção</button>
                 <h2>Diferenciais</h2>
                 <div class="form-group"><label>Título</label><input type="text" id="diffTitle"></div>
                 <div class="form-group"><label>Subtítulo</label><input type="text" id="diffSub"></div>
@@ -384,6 +441,7 @@
             </div>
 
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('oferta')">Salvar seção</button>
                 <h2>Oferta</h2>
                 <div class="form-group"><label>Selo</label><input type="text" id="offerTag"></div>
                 <div class="form-group"><label>Título (use {destaque})</label><input type="text" id="offerTitle"></div>
@@ -393,11 +451,13 @@
             </div>
 
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('contato')">Salvar seção</button>
                 <h2>Contato</h2>
                 <div class="form-group"><label>Texto</label><textarea id="contactText"></textarea></div>
             </div>
 
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('faq')">Salvar seção</button>
                 <h2>FAQ</h2>
                 <div class="form-group"><label>Título</label><input type="text" id="faqTitle"></div>
                 <div id="faqList"></div>
@@ -405,12 +465,14 @@
             </div>
 
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('rodape')">Salvar seção</button>
                 <h2>Rodapé</h2>
                 <div class="form-group"><label>Direitos</label><input type="text" id="footerRights"></div>
                 <div class="form-group"><label>Versículo</label><textarea id="footerVerse"></textarea></div>
             </div>
 
             <div class="admin-card">
+                <button type="button" class="btn btn-primary btn-sm card-save" onclick="saveSection('cores')">Salvar seção</button>
                 <h2>Cores</h2>
                 <div class="two-cols">
                     <div class="form-group"><label>Primária</label><input type="color" id="primaryColor" value="#4A5A2A"></div>
@@ -422,6 +484,7 @@
 
             <div class="admin-actions">
                 <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                <button type="button" class="btn btn-success" onclick="saveAndView()">Salvar e ver site</button>
                 <button type="button" class="btn btn-outline" onclick="showScreen('site')">Ver Site</button>
                 <button type="button" class="btn btn-danger" onclick="logout()">Sair</button>
             </div>
@@ -548,8 +611,6 @@ var defaultConfig = {
 };
 
 var config = Object.assign({}, defaultConfig, JSON.parse(localStorage.getItem('lp_config') || '{}'));
-
-/* ===== CARRINHO ===== */
 var cart = JSON.parse(localStorage.getItem('lp_cart') || '[]');
 
 function $(id){ return document.getElementById(id) }
@@ -564,7 +625,6 @@ function toast(text){
 }
 
 function formatPrice(v){ return 'R$ ' + parseFloat(v || 0).toFixed(2).replace('.', ',') }
-
 function renderStars(n){
     var s = '';
     for(var i=1;i<=5;i++) s += i<=n ? '★' : '☆';
@@ -590,8 +650,6 @@ function applyConfig(){
     setContent('about-p2', config.aboutP2);
     setContent('services-title', config.servicesTitle);
     setContent('services-sub', config.servicesSub);
-
-    // Produtos
     var sg = $('services-grid');
     if(config.products && config.products.length){
         var sh = config.products.filter(function(p){ return p.title }).map(function(p,idx){
@@ -605,7 +663,6 @@ function applyConfig(){
         }).join('');
         sg.innerHTML = sh; sg.style.display = sh ? '' : 'none';
     } else { sg.innerHTML = ''; sg.style.display = 'none'; }
-
     setContent('diff-title', config.diffTitle);
     setContent('diff-sub', config.diffSub);
     var dg = $('diff-grid');
@@ -615,7 +672,6 @@ function applyConfig(){
         }).join('');
         dg.innerHTML = dh; dg.style.display = dh?'':'none';
     } else { dg.innerHTML=''; dg.style.display='none'; }
-
     setContent('offer-tag', config.offerTag);
     var ot = $('offer-title');
     if(config.offerTitle){ ot.innerHTML = config.offerTitle.replace('{destaque}','<span>'+config.offerHighlight+'</span>'); ot.style.display=''; }
@@ -624,7 +680,6 @@ function applyConfig(){
     setContent('offer-cta', config.offerCta);
     setContent('contact-text', config.contactText);
     setContent('faq-title', config.faqTitle);
-
     var fl = $('faq-list');
     if(config.faqs && config.faqs.length){
         var fh = config.faqs.filter(function(f){return f.question&&f.answer}).map(function(f){
@@ -632,7 +687,6 @@ function applyConfig(){
         }).join('');
         fl.innerHTML = fh; fl.style.display = fh?'':'none';
     } else { fl.innerHTML=''; fl.style.display='none'; }
-
     setContent('footer-rights', config.footerRights);
     setContent('footer-verse', config.footerVerse);
     if(config.primaryColor) document.documentElement.style.setProperty('--primary', config.primaryColor);
@@ -658,28 +712,22 @@ function setText(id,v){ var el=$(id); if(el) el.innerHTML=v }
 function updateTipoSelect(){
     var select = $('tipo'); if(!select) return;
     select.innerHTML = '<option value="" disabled selected>Selecione uma opção</option>';
-
-    // Grupo de produtos dinâmicos
     var optgroup1 = document.createElement('optgroup');
     optgroup1.label = 'Serviços';
     (config.products || []).forEach(function(p){
         if(p && p.title){
             var opt = document.createElement('option');
-            opt.value = p.title;
-            opt.textContent = p.title;
+            opt.value = p.title; opt.textContent = p.title;
             optgroup1.appendChild(opt);
         }
     });
     if(optgroup1.children.length) select.appendChild(optgroup1);
-
-    // Grupo de opções fixas (separado por barra)
     var optgroup2 = document.createElement('optgroup');
     optgroup2.label = 'Outras opções';
     (config.fixedOptions || []).forEach(function(o){
         if(o){
             var opt = document.createElement('option');
-            opt.value = o;
-            opt.textContent = o;
+            opt.value = o; opt.textContent = o;
             optgroup2.appendChild(opt);
         }
     });
@@ -693,7 +741,6 @@ function updateCartUI(){
     $('cart-count').style.display = count ? 'flex' : 'none';
     localStorage.setItem('lp_cart', JSON.stringify(cart));
 }
-
 function addToCart(idx){
     var p = config.products[idx];
     if(!p) return;
@@ -703,7 +750,6 @@ function addToCart(idx){
     updateCartUI();
     toast('Adicionado ao carrinho!');
 }
-
 function openCart(){
     var items = $('cart-items');
     if(!cart.length){ items.innerHTML = '<p style="color:var(--text-soft);font-size:.85rem">Seu carrinho está vazio.</p>'; $('cart-total').textContent='Total: R$ 0,00'; }
@@ -715,17 +761,9 @@ function openCart(){
     }
     $('cart-modal').classList.add('active');
 }
-
 function closeCart(){ $('cart-modal').classList.remove('active'); }
-
-function removeFromCart(idx){
-    cart.splice(idx,1);
-    updateCartUI();
-    openCart();
-}
-
+function removeFromCart(idx){ cart.splice(idx,1); updateCartUI(); openCart(); }
 function getTotal(){ return cart.reduce(function(s,i){ return s + (parseFloat(i.price)||0)*i.qty }, 0); }
-
 function goToCheckout(){
     if(!cart.length){ toast('Adicione itens ao carrinho primeiro!'); return; }
     $('cart-modal').classList.remove('active');
@@ -736,7 +774,6 @@ function goToCheckout(){
     $('checkout-step2').style.display = 'none';
     $('checkout-modal').classList.add('active');
 }
-
 function closeCheckout(){ $('checkout-modal').classList.remove('active'); }
 
 /* ===== PIX ===== */
@@ -764,7 +801,6 @@ function generatePixPayload(chave, valor, nome, cidade){
     var crcHex = (crc & 0xFFFF).toString(16).toUpperCase();
     return payload + crcHex;
 }
-
 function gerarPix(){
     var nome = $('checkout-nome').value.trim();
     if(!nome){ toast('Digite seu nome!'); return; }
@@ -778,7 +814,6 @@ function gerarPix(){
     $('checkout-step1').style.display = 'none';
     $('checkout-step2').style.display = 'block';
 }
-
 function copiarPix(){
     var texto = $('pix-payload').textContent;
     if(navigator.clipboard){ navigator.clipboard.writeText(texto).then(function(){ toast('PIX copiado!'); }); }
@@ -786,27 +821,17 @@ function copiarPix(){
         var ta = document.createElement('textarea'); ta.value = texto; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); toast('PIX copiado!');
     }
 }
-
 function confirmarPedido(){
     var nome = $('checkout-nome').value.trim();
     if(!db || !config.pix || !config.pix.key){ toast('Não foi possível salvar o pedido.'); return; }
     var payload = $('pix-payload').textContent;
-    var pedido = {
-        cliente: nome,
-        itens: cart,
-        total: getTotal(),
-        payloadPix: payload,
-        status: 'pendente',
-        criadoEm: firebase.firestore.FieldValue.serverTimestamp()
-    };
+    var pedido = { cliente:nome, itens:cart, total:getTotal(), payloadPix:payload, status:'pendente', criadoEm:firebase.firestore.FieldValue.serverTimestamp() };
     db.collection('orders').add(pedido).then(function(){
         cart = [];
         updateCartUI();
         $('checkout-modal').classList.remove('active');
         toast('Pedido enviado! Aguardando confirmação.');
-    }).catch(function(err){
-        toast('Erro ao salvar pedido: ' + err.message);
-    });
+    }).catch(function(err){ toast('Erro ao salvar pedido: ' + err.message); });
 }
 
 /* ===== PEDIDOS (ADMIN) ===== */
@@ -839,17 +864,11 @@ function watchOrders(){
                 + '</div></div>';
         });
         list.innerHTML = html;
-    }, function(err){
-        console.error(err);
-        $('orders-list').innerHTML = '<p style="color:var(--danger);font-size:.85rem">Erro ao carregar pedidos: '+err.message+'</p>';
-    });
+    }, function(err){ console.error(err); $('orders-list').innerHTML = '<p style="color:var(--danger);font-size:.85rem">Erro: '+err.message+'</p>'; });
 }
-
 function updateOrder(id, status){
     if(!db) return;
-    db.collection('orders').doc(id).update({ status: status }).then(function(){
-        toast('Pedido atualizado para: '+status);
-    }).catch(function(err){ toast('Erro: '+err.message); });
+    db.collection('orders').doc(id).update({ status: status }).then(function(){ toast('Pedido atualizado: '+status); }).catch(function(err){ toast('Erro: '+err.message); });
 }
 
 /* ===== FIREBASE ===== */
@@ -861,7 +880,6 @@ function saveToFirebase(){
         db.collection('config').doc('site').set(config).then(function(){ resolve({ok:true}); }).catch(function(err){ resolve({ok:false,error:err.message}); });
     });
 }
-
 var unsubscribe = null;
 function watchFirebase(){
     if(!db) return;
@@ -900,7 +918,6 @@ $('auth-form').addEventListener('submit', function(e){
         btn.textContent = 'Entrar no Painel'; btn.disabled = false;
     });
 });
-
 function logout(){
     if(auth){
         auth.signOut().then(function(){
@@ -911,7 +928,6 @@ function logout(){
         });
     }
 }
-
 function showScreen(name){
     ['screen-site','screen-auth','screen-admin'].forEach(function(s){ $(s).classList.remove('active'); });
     $('tab-site').classList.remove('active');
@@ -939,6 +955,87 @@ function showScreen(name){
         }
         window.scrollTo(0,0);
     }
+}
+
+/* ===== FUNÇÕES DE SALVAR SEÇÃO ===== */
+function collectCommonFields(){
+    function v(id){ return $(id).value.trim() }
+    config.brandName = v('brandName');
+    config.whatsappNumber = v('whatsappNumber').replace(/\D/g,'');
+    config.instagramUrl = v('instagramUrl');
+    config.facebookUrl = v('facebookUrl');
+    config.heroBadge = v('heroBadge');
+    config.heroTitle = v('heroTitle');
+    config.heroSubtitle = v('heroSubtitle');
+    config.heroChips = v('heroChips').split(',').map(function(s){ return s.trim() }).filter(Boolean);
+    config.ctaPrimary = v('ctaPrimary');
+    config.ctaSecondary = v('ctaSecondary');
+    config.verseText = v('verseText');
+    config.verseRef = v('verseRef');
+    config.aboutTitle = v('aboutTitle');
+    config.aboutP1 = v('aboutP1');
+    config.aboutP2 = v('aboutP2');
+    config.servicesTitle = v('servicesTitle');
+    config.servicesSub = v('servicesSub');
+    config.diffTitle = v('diffTitle');
+    config.diffSub = v('diffSub');
+    config.offerTag = v('offerTag');
+    config.offerTitle = v('offerTitle');
+    config.offerHighlight = v('offerHighlight');
+    config.offerDesc = v('offerDesc');
+    config.offerCta = v('offerCta');
+    config.contactText = v('contactText');
+    config.faqTitle = v('faqTitle');
+    config.footerRights = v('footerRights');
+    config.footerVerse = v('footerVerse');
+    config.primaryColor = $('primaryColor').value;
+    config.primaryDark = $('primaryDark').value;
+    config.secondaryColor = $('secondaryColor').value;
+    config.bgColor = $('bgColor').value;
+    config.pix = { key: v('pixKey'), name: v('pixName'), city: v('pixCity'), instructions: v('pixInstructions') };
+    config.products = [];
+    document.querySelectorAll('#productsList .item').forEach(function(el){
+        config.products.push({ title: el.querySelector('.p-title').value.trim(), description: el.querySelector('.p-desc').value.trim(), price: parseFloat(el.querySelector('.p-price').value)||0, stars: parseInt(el.querySelector('.p-stars').value)||0 });
+    });
+    config.fixedOptions = [];
+    document.querySelectorAll('#fixedOptionsList .fo-input').forEach(function(input){
+        var val = input.value.trim();
+        if(val) config.fixedOptions.push(val);
+    });
+    config.diffs = [];
+    document.querySelectorAll('#diffsList .item').forEach(function(el){
+        config.diffs.push({ title: el.querySelector('.field-title').value.trim(), description: el.querySelector('.field-desc').value.trim() });
+    });
+    config.faqs = [];
+    document.querySelectorAll('#faqList .item').forEach(function(el){
+        config.faqs.push({ question: el.querySelector('.field-question').value.trim(), answer: el.querySelector('.field-answer').value.trim() });
+    });
+}
+
+function saveSection(section){
+    if(!auth || !auth.currentUser){ msg('Você precisa estar logado.','error'); return; }
+    collectCommonFields();
+    localStorage.setItem('lp_config', JSON.stringify(config));
+    applyConfig();
+    sessionStorage.setItem('lp_saving','1');
+    saveToFirebase().then(function(res){
+        if(res.ok){ msg('Seção salva: '+section+'!','success'); toast('Seção atualizada!'); }
+        else { msg('Erro: '+res.error,'error'); toast('Erro ao salvar: '+res.error); }
+        sessionStorage.setItem('lp_saving','0');
+    });
+}
+
+function saveAndView(){
+    if(!auth || !auth.currentUser){ msg('Você precisa estar logado.','error'); return; }
+    collectCommonFields();
+    localStorage.setItem('lp_config', JSON.stringify(config));
+    applyConfig();
+    sessionStorage.setItem('lp_saving','1');
+    saveToFirebase().then(function(res){
+        sessionStorage.setItem('lp_saving','0');
+        if(res.ok){ toast('Tudo salvo!'); showScreen('site'); }
+        else msg('Erro: '+res.error,'error');
+    });
 }
 
 /* ===== ADMIN FORM ===== */
@@ -987,10 +1084,8 @@ function fillAdmin(){
 function renderItems(){
     var pl = $('productsList'); pl.innerHTML = '';
     (config.products || []).forEach(function(item,i){ pl.appendChild(productCard(i, item)); });
-
     var fo = $('fixedOptionsList'); fo.innerHTML = '';
     (config.fixedOptions || []).forEach(function(opt,i){ fo.appendChild(fixedOptionRow(i, opt)); });
-
     var dl = $('diffsList'); dl.innerHTML = '';
     (config.diffs || []).forEach(function(item,i){ dl.appendChild(itemCard('diff',i,item.title,item.description)); });
     var fl = $('faqList'); fl.innerHTML = '';
@@ -1009,24 +1104,15 @@ function productCard(i, p){
     div.querySelector('.remove-item').onclick = function(){ removeProduct(i); };
     return div;
 }
-
 function fixedOptionRow(i, value){
     var div = document.createElement('div');
     div.className = 'fixed-option-item';
     div.innerHTML = '<input type="text" class="fo-input" value="'+esc(value||'')+'" placeholder="Digite a opção fixa">'
         + '<button type="button" class="remove-btn" title="Remover">&times;</button>';
-    div.querySelector('.remove-btn').onclick = function(){
-        config.fixedOptions.splice(i,1);
-        renderItems();
-    };
+    div.querySelector('.remove-btn').onclick = function(){ config.fixedOptions.splice(i,1); renderItems(); };
     return div;
 }
-
-function removeProduct(i){
-    config.products.splice(i,1);
-    renderItems();
-}
-
+function removeProduct(i){ config.products.splice(i,1); renderItems(); }
 function itemCard(type,i,t1,t2){
     var div = document.createElement('div'); div.className = 'item';
     var html = '<button type="button" class="btn btn-danger remove-item" style="position:absolute;top:6px;right:6px;padding:4px 10px;font-size:.7rem">Remover</button>';
@@ -1045,7 +1131,6 @@ function itemCard(type,i,t1,t2){
     };
     return div;
 }
-
 function addItem(type){
     if(type === 'products') config.products.push({title:'',description:'',price:0,stars:5});
     if(type === 'fixedOptions') config.fixedOptions.push('');
@@ -1054,84 +1139,17 @@ function addItem(type){
     renderItems();
 }
 
-function collectForm(){
-    function v(id){ return $(id).value.trim() }
-    config.brandName = v('brandName');
-    config.whatsappNumber = v('whatsappNumber').replace(/\D/g,'');
-    config.instagramUrl = v('instagramUrl');
-    config.facebookUrl = v('facebookUrl');
-    config.heroBadge = v('heroBadge');
-    config.heroTitle = v('heroTitle');
-    config.heroSubtitle = v('heroSubtitle');
-    config.heroChips = v('heroChips').split(',').map(function(s){ return s.trim() }).filter(Boolean);
-    config.ctaPrimary = v('ctaPrimary');
-    config.ctaSecondary = v('ctaSecondary');
-    config.verseText = v('verseText');
-    config.verseRef = v('verseRef');
-    config.aboutTitle = v('aboutTitle');
-    config.aboutP1 = v('aboutP1');
-    config.aboutP2 = v('aboutP2');
-    config.servicesTitle = v('servicesTitle');
-    config.servicesSub = v('servicesSub');
-    config.diffTitle = v('diffTitle');
-    config.diffSub = v('diffSub');
-    config.offerTag = v('offerTag');
-    config.offerTitle = v('offerTitle');
-    config.offerHighlight = v('offerHighlight');
-    config.offerDesc = v('offerDesc');
-    config.offerCta = v('offerCta');
-    config.contactText = v('contactText');
-    config.faqTitle = v('faqTitle');
-    config.footerRights = v('footerRights');
-    config.footerVerse = v('footerVerse');
-    config.primaryColor = $('primaryColor').value;
-    config.primaryDark = $('primaryDark').value;
-    config.secondaryColor = $('secondaryColor').value;
-    config.bgColor = $('bgColor').value;
-
-    config.pix = {
-        key: v('pixKey'),
-        name: v('pixName'),
-        city: v('pixCity'),
-        instructions: v('pixInstructions')
-    };
-
-    config.products = [];
-    document.querySelectorAll('#productsList .item').forEach(function(el){
-        config.products.push({
-            title: el.querySelector('.p-title').value.trim(),
-            description: el.querySelector('.p-desc').value.trim(),
-            price: parseFloat(el.querySelector('.p-price').value) || 0,
-            stars: parseInt(el.querySelector('.p-stars').value) || 0
-        });
-    });
-
-    config.fixedOptions = [];
-    document.querySelectorAll('#fixedOptionsList .fo-input').forEach(function(input){
-        var val = input.value.trim();
-        if(val) config.fixedOptions.push(val);
-    });
-
-    config.diffs = [];
-    document.querySelectorAll('#diffsList .item').forEach(function(el){
-        config.diffs.push({ title: el.querySelector('.field-title').value.trim(), description: el.querySelector('.field-desc').value.trim() });
-    });
-    config.faqs = [];
-    document.querySelectorAll('#faqList .item').forEach(function(el){
-        config.faqs.push({ question: el.querySelector('.field-question').value.trim(), answer: el.querySelector('.field-answer').value.trim() });
-    });
-}
-
+/* ===== SUBMIT GLOBAL ===== */
 $('adminForm').addEventListener('submit', function(e){
     e.preventDefault();
     if(!auth || !auth.currentUser){ msg('Você precisa estar logado.','error'); showScreen('admin'); return; }
-    collectForm();
+    collectCommonFields();
     localStorage.setItem('lp_config', JSON.stringify(config));
     applyConfig();
     sessionStorage.setItem('lp_saving','1');
     saveToFirebase().then(function(res){
-        if(res.ok){ msg('Alterações salvas e transmitidas em tempo real!','success'); toast('Site atualizado!'); }
-        else { msg('Erro no Firebase: '+res.error,'error'); toast('Erro ao salvar: '+res.error); }
+        if(res.ok){ msg('Todas as alterações foram salvas!','success'); toast('Tudo salvo!'); }
+        else { msg('Erro no Firebase: '+res.error,'error'); toast('Erro: '+res.error); }
         sessionStorage.setItem('lp_saving','0');
     });
 });
